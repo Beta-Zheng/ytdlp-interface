@@ -1,4 +1,4 @@
-﻿#include "gui.hpp"
+#include "gui.hpp"
 #include "icons.hpp"
 
 #include <regex>
@@ -693,6 +693,8 @@ bool GUI::process_queue_item(std::wstring url)
 				p->count = 1;
 			if(!fs::exists(conf.ytdlp_path))
 			{
+				lbq.set_line_text(url, {"", "", "error", "", "", "", ""});
+				btndl.enabled(true);
 				if(ca_change)
 					p->fgcolor = theme::is_dark() ? nana::color {"#f99"} : nana::color {"#832"};
 				SendMessage(hwnd, WM_REFRESH, reinterpret_cast<WPARAM>(tbpipe.handle()), 0);
@@ -872,7 +874,8 @@ bool GUI::process_queue_item(std::wstring url)
 			bottom.merger_path.clear();
 			bottom.download_path.clear();
 			auto outpath {bottom.outpath};
-			auto res {util::run_piped_process(cmd, &working, cb_append, cb_progress, &graceful_exit, tempfile.filename().string())};
+			util::process_result process;
+			util::run_piped_process(cmd, &working, cb_append, cb_progress, &graceful_exit, tempfile.filename().string(), &process);
 			bottom.received_procmsg = false;
 			if(!tempfile.empty() && fs::exists(tempfile))
 			{
@@ -904,8 +907,14 @@ bool GUI::process_queue_item(std::wstring url)
 			{
 				if(bottom.timer_proc.started())
 					bottom.timer_proc.stop();
-				if(res == "failed")
+				if(!process.succeeded())
 				{
+					if(!process.started)
+						tbpipe.append(url, "\n[GUI] Could not start download process: " + process.error_message + "\n");
+					else if(process.exit_code_available)
+						tbpipe.append(url, "\n[GUI] Download process failed with exit code: " + std::to_string(process.exit_code) + "\n");
+					else
+						tbpipe.append(url, "\n[GUI] Could not obtain download process exit status: " + process.error_message + "\n");
 					lbq.set_line_text(url, {"", "", "error", "", "", "", ""});
 					auto progtext {prog.nana::progress::caption()};
 					auto pos1 {progtext.find('[')};

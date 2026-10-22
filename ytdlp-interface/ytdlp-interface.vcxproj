@@ -232,6 +232,8 @@
     <ClInclude Include="gui.hpp" />
     <ClInclude Include="hsl_picker.hpp" />
     <ClInclude Include="icons.hpp" />
+    <ClInclude Include="process_result.hpp" />
+    <ClInclude Include="settings_io.hpp" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="log.hpp" />
     <ClInclude Include="msgbox.hpp" />

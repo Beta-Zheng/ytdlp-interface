@@ -108,7 +108,7 @@ std::vector<HWND> util::hwnds_from_pid(DWORD pid)
 std::string util::run_piped_process
 (
 	std::wstring cmd, std::atomic_bool *working, append_callback cbappend, progress_callback cbprog, 
-	std::atomic_bool *graceful_exit, std::string suppress
+	std::atomic_bool *graceful_exit, std::string suppress, process_result *result
 )
 {
 	const std::string strtid {"[tid " + (std::stringstream {} << std::hex << std::this_thread::get_id()).str() + "]"};
@@ -116,6 +116,15 @@ std::string util::run_piped_process
 	modpath.resize(GetModuleFileNameW(0, &modpath.front(), modpath.size()));
 
 	std::string ret;
+	process_result outcome;
+	if(result) *result = outcome;
+	auto failure = [&](DWORD error)
+	{
+		outcome.error_code = error;
+		outcome.error_message = get_last_error_str();
+		if(result) *result = outcome;
+		return cbprog ? std::string {"failed"} : std::string {};
+	};
 	HANDLE hPipeRead, hPipeWrite;
 
 	SECURITY_ATTRIBUTES sa {sizeof(SECURITY_ATTRIBUTES)};
@@ -123,7 +132,16 @@ std::string util::run_piped_process
 	sa.lpSecurityDescriptor = NULL;
 
 	if(!CreatePipe(&hPipeRead, &hPipeWrite, &sa, 0))
-		return ret;
+		return failure(GetLastError());
+	// Only the child's write end should be inherited.
+	if(!SetHandleInformation(hPipeRead, HANDLE_FLAG_INHERIT, 0))
+	{
+		const auto error {GetLastError()};
+		CloseHandle(hPipeWrite);
+		CloseHandle(hPipeRead);
+		SetLastError(error);
+		return failure(error);
+	}
 
 	STARTUPINFOW si {sizeof(STARTUPINFOW)};
 	si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
@@ -136,13 +154,17 @@ std::string util::run_piped_process
 	BOOL res {CreateProcessW(NULL, &cmd.front(), NULL, NULL, TRUE, CREATE_NEW_CONSOLE|CREATE_NEW_PROCESS_GROUP, NULL, NULL, &si, &pi)};
 	if(!res)
 	{
+		const auto error {GetLastError()};
 		CloseHandle(hPipeWrite);
 		CloseHandle(hPipeRead);
-		return ret;
+		SetLastError(error);
+		return failure(error);
 	}
+	outcome.started = true;
 
 	auto killproc = [&] (bool quick)
 	{
+		outcome.cancelled = true;
 		if(!g_exiting)
 		{
 			static std::mutex mtx;
@@ -341,22 +363,29 @@ std::string util::run_piped_process
 		}
 	}
 
-	if(!quick)
 	{
 		DWORD exit_code {0};
-		GetExitCodeProcess(pi.hProcess, &exit_code);
-		if(exit_code == 1 && cbprog)
-			ret = "failed";
-		if(exit_code == STILL_ACTIVE)
+		// 259 (STILL_ACTIVE) can also be a real exit code: consult the process handle.
+		if(WaitForSingleObject(pi.hProcess, 0) == WAIT_OBJECT_0 && GetExitCodeProcess(pi.hProcess, &exit_code))
 		{
-			killproc(quick);
+			outcome.exit_code_available = true;
+			outcome.exit_code = exit_code;
+		}
+		else if(!outcome.cancelled)
+		{
+			const auto error {GetLastError()};
+			outcome.error_code = error;
+			outcome.error_message = get_last_error_str();
 		}
 	}
+	if(!outcome.succeeded() && cbprog)
+		ret = "failed";
 
 	CloseHandle(hPipeWrite);
 	CloseHandle(hPipeRead);
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
+	if(result) *result = outcome;
 	return ret;
 }
 
@@ -801,10 +830,10 @@ bool util::pwr_can_hibernate()
 fs::path util::to_relative_path(const fs::path &abs)
 {
 	auto path {fs::relative(abs)};
-	const auto path_string {path.string()};
-	if(path_string.starts_with("..\\") || path_string.empty())
+	const auto &path_string {path.native()};
+	if(path_string.starts_with(L"..\\") || path_string.empty())
 		return abs;
-	else if(path_string == ".")
+	else if(path_string == L".")
 		return ".\\";
 	return ".\\" / path;
 }

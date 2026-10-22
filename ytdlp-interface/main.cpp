@@ -1,4 +1,5 @@
-﻿#include "gui.hpp"
+#include "gui.hpp"
+#include "settings_io.hpp"
 #pragma warning (disable: 4244)
 
 
@@ -140,37 +141,42 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
 	else if(fs::exists(appdir_confpath) && !fs::exists(confpath))
 		fs::copy_file(appdir_confpath, confpath, ec);
 
-	nlohmann::json jconf;
+	// Parse into a candidate: malformed input must not leave partially loaded settings.
+	GUI::conf.outpath = util::get_sys_folder(FOLDERID_Downloads);
 	if(fs::exists(confpath))
 	{
-		std::ifstream f {confpath};
-		try { f >> jconf; }
-		catch(nlohmann::detail::exception e)
+		const auto presets_before {GUI::conf_presets};
+		try
 		{
-			msgbox mbox {"ytdlp-interface JSON error"};
-			mbox.icon(msgbox::icon_error);
-			(mbox << confpath.string() << "\n\nAn exception occured when trying to load the settings file:\n\n" << e.what())();
+			std::ifstream f {confpath};
+			if(!f) throw std::runtime_error("Cannot open settings file");
+			nlohmann::json jconf;
+			f >> jconf;
+			auto loaded {GUI::conf};
+			loaded.from_json(jconf);
+			if(!fs::exists(loaded.ffmpeg_path, ec) && !ec && fs::exists(".\\ffmpeg.exe", ec) && !ec)
+				loaded.ffmpeg_path = ".\\";
+			GUI::conf = std::move(loaded);
 		}
-		if(!jconf.empty())
+		catch(const std::exception &error)
 		{
-			GUI::conf.from_json(jconf);
-			std::error_code ec;
-			if(!fs::exists(GUI::conf.ffmpeg_path, ec))
+			GUI::conf_presets = presets_before;
+			fs::path backup;
+			try { backup = settings_io::backup_invalid(confpath); }
+			catch(const std::exception &backup_error)
 			{
-				if(!ec)
-				{
-					if(fs::exists(".\\ffmpeg.exe", ec))
-					{
-						if(!ec)
-							GUI::conf.ffmpeg_path = ".\\";
-					}
-				}
+				msgbox mbox {"Settings recovery failed"};
+				mbox.icon(msgbox::icon_error);
+				(mbox << "The settings file is invalid and could not be backed up. Startup was stopped to preserve the original file.\n\n"
+					<< backup_error.what())();
+				return 1;
 			}
+			msgbox mbox {"Settings restored to defaults"};
+			mbox.icon(msgbox::icon_warning);
+			(mbox << "The settings file could not be loaded. Defaults will be used. The original file was backed up to:\n\n"
+				<< nana::to_utf8(backup.wstring()) << "\n\nError details:\n" << error.what())();
 		}
 	}
-	else GUI::conf.outpath = util::get_sys_folder(FOLDERID_Downloads);
-
-	jconf.clear();
 
 	GUI gui;
 	gui.confpath = confpath;
@@ -195,4 +201,5 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int)
 	});
 	nana::exec();
 	CoUninitialize();
+	return 0;
 }

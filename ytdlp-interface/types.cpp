@@ -2,6 +2,7 @@
 #include "icons.hpp"
 #include "util.hpp"
 #include "gui.hpp"
+#include "settings_io.hpp"
 
 
 std::string version_t::string()
@@ -442,7 +443,7 @@ void settings_t::to_jpreset(nlohmann::json &j) const
 void settings_t::from_jpreset(const nlohmann::json &j)
 {
 	using nana::to_wstring;
-	outpath = j["outpath"].get<std::string>();
+	outpath = j["outpath"].get<fs::path>();
 	fmt1 = to_wstring(j["fmt1"].get<std::string>());
 	fmt2 = to_wstring(j["fmt2"].get<std::string>());
 	ratelim = j["ratelim"];
@@ -512,7 +513,7 @@ void settings_t::from_jpreset(const nlohmann::json &j)
 	try
 	{
 		cb_cookies = j.at("cb_cookies");
-		cookies_path = j.at("cookies_path").get<std::string>();
+		cookies_path = j.at("cookies_path").get<fs::path>();
 	}
 	catch(const nlohmann::json::out_of_range) {}
 	if(jblock.contains("cb_display_custom_filenames"))
@@ -763,11 +764,15 @@ void settings_t::to_json(nlohmann::json &j) const
 }
 
 
-void settings_t::from_json(const nlohmann::json &j)
+void settings_t::from_json(const nlohmann::json &source)
 {
 	using nana::to_wstring;
+	nlohmann::json defaults;
+	to_json(defaults);
+	auto j {source};
+	settings_io::fill_missing(j, defaults);
 
-	ytdlp_path = j["ytdlp_path"].get<std::string>();
+	ytdlp_path = j["ytdlp_path"].get<fs::path>();
 	if(!ytdlp_path.empty())
 		ytdlp_path = util::to_relative_path(ytdlp_path);
 	if(ytdlp_path.empty() || !fs::exists(ytdlp_path))
@@ -778,12 +783,12 @@ void settings_t::from_json(const nlohmann::json &j)
 		else if(fs::exists(appdir / ytdlp_fname))
 			ytdlp_path = ".\\" + ytdlp_fname;
 	}
-	outpath = util::to_relative_path(j["outpath"].get<std::string>());
+	outpath = util::to_relative_path(j["outpath"].get<fs::path>());
 	fmt1 = to_wstring(j["fmt1"].get<std::string>());
 	fmt2 = to_wstring(j["fmt2"].get<std::string>());
 	ratelim = j["ratelim"];
 	ratelim_unit = j["ratelim_unit"];
-	if(j.contains("cbkeyframes")) // v1.1
+	if(source.contains("cbkeyframes")) // v1.1
 	{
 		cbsubs = j["cbsubs"];
 		cbthumb = j["cbthumb"];
@@ -791,33 +796,33 @@ void settings_t::from_json(const nlohmann::json &j)
 		cbkeyframes = j["cbkeyframes"];
 		cbmp3 = j["cbmp3"];
 	}
-	if(j.contains("pref_res")) // v1.2
+	if(source.contains("pref_res")) // v1.2
 	{
-		if(!j.contains("json_hide_null")) // v2.2 added two options at the top
+		if(!source.contains("json_hide_null")) // v2.2 added two options at the top
 			pref_res = j["pref_res"] + 2;
 		else pref_res = j["pref_res"];
 		pref_video = j["pref_video"];
 		pref_audio = j["pref_audio"];
 		pref_fps = j["pref_fps"];
 	}
-	if(j.contains("cbtheme")) // v1.3
+	if(source.contains("cbtheme")) // v1.3
 		cbtheme = j["cbtheme"];
-	if(j.contains("contrast")) // v1.4
+	if(source.contains("contrast")) // v1.4
 	{
 		contrast = j["contrast"];
 		cbargs = j["cbargs"];
-		if(j.contains("args"))
+		if(source.contains("args"))
 		{
 			argsets.push_back(j["args"].get<std::string>());
 		}
 	}
-	if(j.contains("kwhilite")) // v1.5
+	if(source.contains("kwhilite")) // v1.5
 	{
 		kwhilite = j["kwhilite"];
 		for(auto &el : j["argsets"])
 			argsets.push_back(el.get<std::string>());
 	}
-	if(j.contains("output_template")) // v1.6
+	if(source.contains("output_template")) // v1.6
 	{
 		output_template = to_wstring(j["output_template"].get<std::string>());
 		max_concurrent_downloads = j["max_concurrent_downloads"];
@@ -838,7 +843,7 @@ void settings_t::from_json(const nlohmann::json &j)
 				}
 			}
 		}
-		if(j.contains("outpaths"))
+		if(source.contains("outpaths"))
 			for(auto &el : j["outpaths"])
 				outpaths.insert(to_wstring(el.get<std::string>()));
 		common_dl_options = j["common_dl_options"];
@@ -849,17 +854,17 @@ void settings_t::from_json(const nlohmann::json &j)
 		output_template = output_template_default;
 		outpaths.insert(outpath);
 	}
-	if(j.contains("cb_queue_autostart")) // v1.6.1
+	if(source.contains("cb_queue_autostart")) // v1.6.1
 	{
 		cb_queue_autostart = j["cb_queue_autostart"];
 	}
-	if(j.contains("open_dialog_origin")) // v1.7
+	if(source.contains("open_dialog_origin")) // v1.7
 	{
 		gpopt_hidden = j["gpopt_hidden"];
 		open_dialog_origin = j["open_dialog_origin"];
 		playlist_indexing = to_wstring(j["playlist_indexing"].get<std::string>());
 	}
-	if(j.contains("cb_zeropadding")) // v1.8
+	if(source.contains("cb_zeropadding")) // v1.8
 	{
 		cb_zeropadding = j["cb_zeropadding"];
 		cb_playlist_folder = j["cb_playlist_folder"];
@@ -872,7 +877,7 @@ void settings_t::from_json(const nlohmann::json &j)
 			dpi = j["window"]["dpi"];
 		else dpi = nana::api::screen_dpi(true);
 	}
-	if(j.contains("get_releases_at_startup")) // v2.0
+	if(source.contains("get_releases_at_startup")) // v2.0
 	{
 		get_releases_at_startup = j["get_releases_at_startup"];
 		col_format = j["queue_columns"]["format"];
@@ -880,22 +885,22 @@ void settings_t::from_json(const nlohmann::json &j)
 		col_ext = j["queue_columns"]["ext"];
 		col_fsize = j["queue_columns"]["fsize"];
 	}
-	if(j.contains("output_template_bandcamp")) // v2.1
+	if(source.contains("output_template_bandcamp")) // v2.1
 	{
 		output_template_bandcamp = to_wstring(j["output_template_bandcamp"].get<std::string>());
 	}
-	if(j.contains("json_hide_null")) // v2.2
+	if(source.contains("json_hide_null")) // v2.2
 	{
 		json_hide_null = j["json_hide_null"];
 	}
-	if(j.contains("ytdlp_nightly")) // v2.3
+	if(source.contains("ytdlp_nightly")) // v2.3
 	{
 		col_site_icon = j["queue_columns"]["website_icon"];
 		col_site_text = j["queue_columns"]["website_text"];
 		ytdlp_nightly = j["ytdlp_nightly"];
 		audio_multistreams = j["audio_multistreams"];
 	}
-	if(j.contains("sblock")) // v2.4
+	if(source.contains("sblock")) // v2.4
 	{
 		const auto &jblock {j["sblock"]};
 		if(jblock.contains("mark"))
@@ -909,42 +914,42 @@ void settings_t::from_json(const nlohmann::json &j)
 		cb_proxy = j["proxy"]["enabled"];
 		proxy = to_wstring(j["proxy"]["URL"].get<std::string>());
 	}
-	if(j.contains("cbsnap")) // v2.5
+	if(source.contains("cbsnap")) // v2.5
 	{
 		cbsnap = j["cbsnap"];
 	}
-	if(j.contains("limit_output_buffer")) // v2.6
+	if(source.contains("limit_output_buffer")) // v2.6
 	{
 		limit_output_buffer = j["limit_output_buffer"];
 		output_buffer_size = j["output_buffer_size"];
 	}
-	if(j.contains("update_self_only")) // v2.7
+	if(source.contains("update_self_only")) // v2.7
 	{
 		update_self_only = j["update_self_only"];
 		pref_vcodec = j["pref_vcodec"];
 		pref_acodec = j["pref_acodec"];
 		argset = j["argset"];
 	}
-	if(j.contains("cb_premium")) // v2.8
+	if(source.contains("cb_premium")) // v2.8
 	{
 		cb_premium = j["cb_premium"];
 		cbminw = j["cbminw"];
 		cb_save_errors = j["cb_save_errors"];
 		cb_ffplay = j["cb_ffplay"];
 	}
-	if(j.contains("ffmpeg_path")) // v2.9
+	if(source.contains("ffmpeg_path")) // v2.9
 	{
-		ffmpeg_path = j["ffmpeg_path"].get<std::string>();
+		ffmpeg_path = j["ffmpeg_path"].get<fs::path>();
 		if(!ffmpeg_path.empty())
 			ffmpeg_path = util::to_relative_path(ffmpeg_path);
 	}
-	if(j.contains("cb_clear_done")) // v2.11
+	if(source.contains("cb_clear_done")) // v2.11
 	{
 		cb_clear_done = j["cb_clear_done"];
 		cb_formats_fsize_bytes = j["cb_formats_fsize_bytes"];
 		cb_add_on_focus = j["cb_add_on_focus"];
 	}
-	if(j.contains("theme")) // v2.13
+	if(source.contains("theme")) // v2.13
 	{
 		cb_custom_dark_theme = j["cb_custom_dark_theme"];
 		cb_custom_light_theme = j["cb_custom_light_theme"];
@@ -953,39 +958,49 @@ void settings_t::from_json(const nlohmann::json &j)
 		theme_light.from_json(j["theme"]["light"]);
 		theme_light.contrast(contrast, false);
 	}
-	if(j.contains("com_chap")) // v2.13.3
+	if(source.contains("com_chap")) // v2.13.3
 	{
 		com_chap = j["com_chap"];
 	}
-	if(j.contains("com_cookies")) // v2.14
+	if(source.contains("com_cookies")) // v2.14
 	{
 		com_cookies = j["com_cookies"];
 	}
-	if(j.contains("max_data_threads")) // v2.15
+	if(source.contains("max_data_threads")) // v2.15
 	{
 		max_data_threads = j["max_data_threads"];
 		cookie_options = j["cookie_options"].get<std::string>();
 	}
-	if(j.contains("presets")) // v2.16
+	if(source.contains("presets")) // v2.16
 	{
 		for(auto &jpreset : j["presets"])
 		{
 			settings_t tempset;
-			tempset.from_jpreset(jpreset["data"]);
-			GUI::conf_presets[jpreset["name"]] = std::move(tempset);
+			nlohmann::json preset_defaults;
+			tempset.to_jpreset(preset_defaults);
+			auto data {jpreset.at("data")};
+			settings_io::fill_missing(data, preset_defaults);
+			tempset.from_jpreset(data);
+			GUI::conf_presets[jpreset.at("name").get<std::string>()] = std::move(tempset);
 		}
 	}
-	if(j.contains("cb_display_custom_filenames")) // v2.17
+	if(source.contains("cb_display_custom_filenames")) // v2.17
 	{
 		cb_display_custom_filenames = j["cb_display_custom_filenames"];
 	}
-	if(j.contains("cb_aria")) // v2.18
+	if(source.contains("cb_aria")) // v2.18
 	{
 		cb_aria = j["cb_aria"];
 		aria_options = j["aria_options"].get<std::string>();
 		sub_format = j["sub_format"].get<std::string>();
 		sub_langs = j["sub_langs"].get<std::string>();
 		cb_cookies = j["cb_cookies"];
-		cookies_path = j["cookies_path"].get<std::string>();
+		cookies_path = j["cookies_path"].get<fs::path>();
 	}
+	if(pref_res >= 10 || pref_video >= 4 || pref_audio >= 7 || pref_vcodec >= 9 || pref_acodec >= 14 ||
+		cbtheme >= 3 || ratelim_unit >= 2 || com_chap >= 3 || com_cookies >= 10 ||
+		max_concurrent_downloads < 1 || max_concurrent_downloads > 10 || max_data_threads < 1 ||
+		ratelim < 0 || contrast < 0 || contrast > .3 || max_proc_dur.count() < 0 || dpi <= 0)
+		throw std::runtime_error("Settings contain an out-of-range value");
+
 }

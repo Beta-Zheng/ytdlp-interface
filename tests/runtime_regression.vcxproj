@@ -1,0 +1,25 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64"><Configuration>Release</Configuration><Platform>x64</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals"><WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration"><ConfigurationType>Application</ConfigurationType><PlatformToolset>v143</PlatformToolset><CharacterSet>Unicode</CharacterSet></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup><OutDir>$(ProjectDir)..\work\tests\</OutDir><IntDir>$(OutDir)runtime-obj\</IntDir><LinkIncremental>false</LinkIncremental></PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile><LanguageStandard>stdcpplatest</LanguageStandard><AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions><RuntimeLibrary>MultiThreaded</RuntimeLibrary><ExceptionHandling>Sync</ExceptionHandling><AdditionalIncludeDirectories>$(ProjectDir)..\nana\include;$(ProjectDir)..\bit7z\include</AdditionalIncludeDirectories></ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem><GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\bit7z\bin\x64;$(ProjectDir)..\nana\build\bin;$(ProjectDir)..\libpng\x64\Release;$(ProjectDir)..\libjpeg-turbo-3.1.2\out\build\x64-Release\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>bit7z64.lib;nana_v143_Release_x64.lib;turbojpeg-static.lib;libpng.lib;Dwmapi.lib;Wininet.lib;PowrProf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="runtime_regression.cpp" />
+    <!-- Link the production objects to test the real process runner and settings reader. Build the app first. -->
+    <Object Include="..\ytdlp-interface\x64\Release\*.obj" Exclude="..\ytdlp-interface\x64\Release\main.obj" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
