@@ -1,4 +1,4 @@
-﻿#include "gui.hpp"
+#include "gui.hpp"
 #include "icons.hpp"
 
 #include <regex>
@@ -226,16 +226,16 @@ GUI::GUI() : themed_form {std::bind(&GUI::apply_theme, this, std::placeholders::
 	auto m {GetSystemMenu(hwnd, FALSE)};
 	if(m)
 	{
-		MENUITEMINFOA i {0};
+		MENUITEMINFOW i {0};
 		i.cbSize = sizeof MENUITEMINFO;
 		i.fMask = MIIM_FTYPE | MIIM_STRING | MIIM_ID;
 		i.fType = MFT_STRING;
 		i.wID = 1337;
-		i.dwTypeData = (CHAR*)"Reset size and position\tCtrl+Num0";
-		InsertMenuItemA(m, SC_CLOSE, FALSE, &i);
-		i.dwTypeData = (CHAR*)"Close\tEsc, Alt+F4";
+		i.dwTypeData = const_cast<WCHAR*>(L"重置大小和位置\tCtrl+Num0");
+		InsertMenuItemW(m, SC_CLOSE, FALSE, &i);
+		i.dwTypeData = const_cast<WCHAR*>(L"关闭\tEsc, Alt+F4");
 		i.fMask = MIIM_STRING;
-		SetMenuItemInfoA(m, SC_CLOSE, FALSE, &i);
+		SetMenuItemInfoW(m, SC_CLOSE, FALSE, &i);
 	}
 }
 
@@ -265,7 +265,7 @@ bool GUI::process_queue_item(std::wstring url)
 		if(tbpipe.current() == url)
 		{
 			tbpipe.clear();
-			if(tbpipe_overlay.visible() && btnq.caption().find("queue") != -1)
+			if(tbpipe_overlay.visible() && btnq.caption() == i18n::tr("Show queue"))
 				tbpipe.show(url);
 		}
 		else tbpipe.clear(url);
@@ -1712,7 +1712,7 @@ void GUI::add_url(std::wstring url, bool refresh, bool saveq, const size_t cat)
 							m.enabled(n, true);
 							if(m.text(n) == "Select formats" && !bottom.btnfmt_visible())
 								m.erase(n--);
-							if(m.text(n) == "Select subtitles")
+							if(m.text(n) == "选择字幕")
 							{
 								if(!vidinfo.empty() && vidinfo.contains("subtitles") && vidinfo.at("subtitles").is_object())
 								{
@@ -2431,7 +2431,7 @@ void GUI::adjust_lbq_headers()
 		if(conf.col_site_icon || conf.col_site_text)
 		{
 			lbq.column_at(1).width(one);
-			lbq.column_at(1).text(conf.col_site_text ? "Website" : "");
+			lbq.column_at(1).text(conf.col_site_text ? i18n::tr("Website") : "");
 			if(!lbq.column_at(1).visible())
 				lbq.column_at(1).visible(true);
 		}

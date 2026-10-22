@@ -74,15 +74,15 @@ namespace widgets
 			{
 			default:
 			case MB_OK:
-				btn3.create(bot_panel, "OK");
+				btn3.create(bot_panel, "确定");
 				btn3.events().click([this] {close(); });
 				plc_bot["btn3"] << btn3;
 				break;
 
 			case nana::msgbox::yes_no:
 			case MB_YESNO:
-				btn2.create(bot_panel, "Yes");
-				btn3.create(bot_panel, "No");
+				btn2.create(bot_panel, "是");
+				btn3.create(bot_panel, "否");
 				btn2.events().click([this] {user_choice = IDYES; close(); });
 				btn3.events().click([this] {user_choice = IDNO; close(); });
 				plc_bot["btn2"] << btn2;
@@ -91,8 +91,8 @@ namespace widgets
 
 			case nana::msgbox::yes_no_cancel:
 			case MB_YESNOCANCEL:
-				btn1.create(bot_panel, "Yes");
-				btn2.create(bot_panel, "No");
+				btn1.create(bot_panel, "是");
+				btn2.create(bot_panel, "否");
 				btn3.create(bot_panel, "Cancel");
 				btn1.events().click([this] {user_choice = IDYES; close(); });
 				btn2.events().click([this] {user_choice = IDNO; close(); });
@@ -124,7 +124,7 @@ namespace widgets
 			if(buttons == MB_OK)
 				btn3.focus();
 
-			l_msg.caption(msg.str());
+			l_msg.caption(i18n::tr(msg.str()));
 			auto h_top {std::max(l_msg.measure(dpi_scale(477)).height, (unsigned)dpi_scale(40))};
 			center(dpi_scale(580), dpi_scale(40) + dpi_scale(74) + h_top, false);
 			bring_top(true);

@@ -72,8 +72,8 @@ void GUI::fm_settings()
 	};
 
 	widgets::conf_tree tree {fm, &fm.get_place(), page_callback};
-	tree.add("yt-dlp", "ytdlp");
-	tree.add("SponsorBlock", "sblock");
+	tree.add("下载器", "ytdlp");
+	tree.add("赞助片段", "sblock");
 	tree.add("Queuing", "queuing");
 	tree.add("Interface", "gui");
 	tree.add("Updater", "updater");
@@ -90,7 +90,7 @@ void GUI::fm_settings()
 	fm["about"] << about.actual_handle();
 
 	about.div(R"(vert
-		<pnl_header weight=35> <weight=10> <l_about_ver weight=50> <weight=15>
+		<pnl_header weight=35> <weight=10> <l_about_ver weight=82> <weight=15>
 		<about_sep1 weight=3> <weight=20> <libtitle weight=28> <weight=13>
 		<weight=28 <l_nana> <weight=20> <l_nana_ver>>
 		<weight=28 <l_json> <weight=20> <l_json_ver>>
@@ -109,7 +109,8 @@ void GUI::fm_settings()
 	)");
 
 	std::string vertext {ver_tag + " (" + (X64 ? "64-bit)" : "32-bit)") +
-		"\n<color=0x url=\"https://github.com/ErrorFlynn/ytdlp-interface\">https://github.com/ErrorFlynn/ytdlp-interface</>"};
+		"\n<color=0x url=\"https://github.com/ErrorFlynn/ytdlp-interface\">https://github.com/ErrorFlynn/ytdlp-interface</>" +
+		"\n简体中文本地构建；翻译参考：<color=0x url=\"https://github.com/Terence0816/ytdlp-interface-zh-TW\">https://github.com/Terence0816/ytdlp-interface-zh-TW</>"};
 	std::string about_text {""};
 
 	about_label l_about_ver {about, ""};
@@ -203,8 +204,8 @@ void GUI::fm_settings()
 		cb_add_on_focus {queuing, "When the main window is activated, automatically add the URL from clipboard"},
 		cb_display_custom_filenames {queuing, "Display any custom file names in the \"Media title\" column"},
 		cb_aria {ytdlp, "Tell yt-dlp to download with aria2c  (--downloader aria2c)"}, cb_cookies {ytdlp, "Load cookies from file:"};
-	widgets::Separator sep1 {ytdlp}, sep2 {ytdlp}, sep3 {gui}, sep_aria {ytdlp, "aria2c integration"};
-	widgets::Button btn_close {fm, " Close"}, btn_default {ytdlp, "Reset to default", true},
+	widgets::Separator sep1 {ytdlp}, sep2 {ytdlp}, sep3 {gui}, sep_aria {ytdlp, "aria2c 集成"};
+	widgets::Button btn_close {fm, " 关闭"}, btn_default {ytdlp, "Reset to default", true},
 		btn_playlist_default {ytdlp, "Reset to default", true}, btn_info {ytdlp};
 	widgets::Spinbox sb_maxdl {queuing}, sb_maxinfo {queuing};
 	widgets::Slider slider {gui};
@@ -304,8 +305,8 @@ void GUI::fm_settings()
 		}
 		else fb.init_path(appdir);
 		fb.allow_multi_select(false);
-		fb.add_filter("Cookies file", "*.txt;*.*");
-		fb.title("Locate and select a text file that contains cookies exported from a browser");
+		fb.add_filter("Cookies 文件", "*.txt;*.*");
+		fb.title("选择从浏览器导出的 Cookies 文本文件");
 		auto res {fb()};
 		if(res.size())
 		{
@@ -419,7 +420,7 @@ void GUI::fm_settings()
 	tb_cookies.typeface(nana::paint::font_info {"Tahoma", 10});
 	tb_cookies.multi_lines(false);
 
-	std::string sblock_text {"<color=0x url=\"https://sponsor.ajay.app\">SponsorBlock</> lets users mark or remove segments in YouTube videos"};
+	std::string sblock_text {"<color=0x url=\"https://sponsor.ajay.app\">SponsorBlock</> 可让用户标记或移除 YouTube 视频中的片段"};
 	l_sblock.format(true);
 	l_sblock.tooltip("https://sponsor.ajay.app");
 	l_sblock.text_align(nana::align::center, nana::align_v::center);
@@ -435,8 +436,8 @@ void GUI::fm_settings()
 		lbremove.at(0).push_back(sblock_infos[key].first);
 		lbremove.at(0).back().value(key);
 	}
-	cb_mark.tooltip("yt-dlp will create chapters for the segments in these categories\n(this passes <bold>--sponsorblock-mark</> to yt-dlp)");
-	cb_remove.tooltip("yt-dlp will remove the segments in these categories\n(this passes <bold>--sponsorblock-remove</> to yt-dlp)");
+	cb_mark.tooltip("yt-dlp 会为这些分类的片段建立章节标记\n（这会把 <bold>--sponsorblock-mark</> 传给 yt-dlp）");
+	cb_remove.tooltip("yt-dlp 会移除这些分类的片段\n（这会把 <bold>--sponsorblock-remove</> 传给 yt-dlp）");
 
 	size_t hovitem_mark {nana::npos};
 	lbmark.events().mouse_move([&](const nana::arg_mouse &arg)
@@ -539,9 +540,9 @@ void GUI::fm_settings()
 		<weight=25 <opendlg_spacer weight=345> <cb_origin_progdir>> <weight=20>
 	)");
 
-	widgets::cbox cb_custom_dark_theme {gui, "Use custom dark color theme"},
-		cb_custom_light_theme {gui, "Use custom light color theme"};
-	widgets::Button btn_edit_theme {gui, "Edit custom theme", true};
+	widgets::cbox cb_custom_dark_theme {gui, "使用自定义深色主题"},
+		cb_custom_light_theme {gui, "使用自定义浅色主题"};
+	widgets::Button btn_edit_theme {gui, "编辑自定义主题", true};
 	btn_edit_theme.events().click([&] { fm_colors(fm); });
 
 	gui["cb_custom_dark_theme"] << cb_custom_dark_theme;
@@ -569,9 +570,7 @@ void GUI::fm_settings()
 		<weight=35 <><btn_save weight=100> <weight=20> <btn_load weight=100> <weight=20> <btn_delete weight=110> <weight=20> <btn_rename weight=110> <>>
 	)");
 
-	widgets::Label l_pinfo {presets, "<bold>Configuration presets</> are snapshots of the settings found in the first three categories "
-		"(yt-dlp, SponsorBlock, Queuing), as well as the ones in the \"Download options\" group in the main window. The \"Save\" button saves the current "
-		"settings to the selected preset, and the \"Load\" button loads the selected preset into the current settings."}, 
+	widgets::Label l_pinfo {presets, "<bold>设置预设</> 会保存前三个分类（yt-dlp、SponsorBlock、队列）以及主窗口「下载选项」群组中的设置快照。「保存」按钮会把当前设置存到选择的预设，而「加载」按钮则会把该预设应用到当前设置。"},
 		l_add {presets, "Name for new preset:"};
 	widgets::Separator sep_presets {presets};
 	widgets::Listbox lb_presets {presets};
@@ -616,7 +615,7 @@ void GUI::fm_settings()
 	btn_save.enable(false);
 	btn_load.enable(false);
 	btn_delete.enable(false);
-	btn_add.tooltip("Create a new preset and save the current settings to it.");
+	btn_add.tooltip("建立新的预设，并把当前设置存进去。");
 
 	presets["l_pinfo"] << l_pinfo;
 	presets["lb_presets"] << lb_presets;
@@ -726,7 +725,7 @@ void GUI::fm_settings()
 		if(!sel.empty())
 		{
 			auto item {lb_presets.at(sel.front())};
-			const auto res {input_box(fm, "Rename preset", "New name for preset:")};
+			const auto res {input_box(fm, "重命名预设", "预设的新名称：")};
 			if(res.first)
 			{
 				const auto new_name {res.second}, old_name {item.text(0)};
@@ -1059,106 +1058,49 @@ void GUI::fm_settings()
 		lb_presets.auto_draw(true);
 	};
 
-	cb_save_errors.tooltip("When the settings are saved, any incomplete queue items are also saved,\nexcept for those with the "
-		"\"error\" status. This option lets you also save the\nitems with the \"error\" status, which can be useful when a "
-		"download fails\ndue to connection issues, but can be resumed later.");
+	cb_save_errors.tooltip("保存设置时也会保存未完成的队列项目，默认排除“错误”状态的项目。\n启用此选项可一并保存错误项目，方便稍后重试因网络等问题失败的下载。");
 
-	cb_premium.tooltip("This option lets you override your video codec preference, in the case when a video\n"
-		"has format 616 available (which has the \"premium\" bitrate). For example, if you're\ndownloading a 1080p video and "
-		"you prefer the H264 codec, this option will override\nthat codec preference by requesting format 616 from yt-dlp "
-		"(with the argument\n\"-f 616+ba\").");
+	cb_premium.tooltip("下载 1080p 视频时，如果存在高码率 premium 格式，此选项允许覆盖视频编码偏好，优先请求该格式。");
 
-	cb_android.tooltip("Forces yt-dlp to use the Android client for extracting the video by passing\n"
-		"\"<bold>--extractor-args youtube:player_client=android</>\". This can be useful\nbecause some formats are only available "
-		"to the Android client."
-		"\n\nHowever, be aware of the warning from yt-dlp:\n\"<bold>Android client formats are broken and may yield HTTP Error 403</>\"");
+	cb_android.tooltip("向 yt-dlp 传入 <bold>--extractor-args youtube:player_client=android</>，强制使用 Android 客户端解析视频。\n部分格式可能仅在该客户端可用，但也可能返回 HTTP 403 错误。");
 
-	cbfps.tooltip("If several different formats have the same resolution,\ndownload the one with the highest framerate.");
+	cbfps.tooltip("多个格式分辨率相同时，优先选择帧率最高的格式。");
 
-	cb_lengthyproc.tooltip("When yt-dlp finishes downloading all the files associated with a queue item,\n"
-		"it performs actions on the files referred to as \"post-processing\". These actions\ncan be a number of things, depending "
-		"on the context, and on the options used.\n\nSometimes this post-processing phase can take a long time, so this setting\n"
-		"makes the program automatically start the next queue item when processing\ntakes longer that 3 seconds.");
+	cb_lengthyproc.tooltip("下载文件后，yt-dlp 可能需要合并、转换等后处理。\n如果后处理超过 3 秒，自动开始下一个队列项目。");
 
-	cb_zeropadding.tooltip("This option pads the index numbers in the filenames of playlist videos\nwith zeroes, when the playlist "
-		"contains more than 9 videos. This allows\nthe filenames to be sorted properly when viewed in a file manager (for\nexample, "
-		"<bold>\"2 - name\"</> comes after <bold>\"14 - name\"</> in the sort order, but\n<bold>\"02 - name\"</> comes before <bold>\"14 - name\"</>).\n\n"
-		"This feature works by automatically editing the \"Playlist indexing\" string\ndefined above, as long as it contains "
-		"<bold>\"%(playlist_index)d\"</>.\n\nAn appropriate amount of zeroes is added, according to the size of the\nplaylist "
-		"(if it has tens of videos, up to one zero; if it has hundreds of\nvideos, up to two zeroes; etc).");
+	cb_zeropadding.tooltip("播放列表超过 9 项时，自动为文件名中的编号补零，使文件按数字顺序排列。\n例如，02 排在 14 之前。编号模板需要包含 <bold>%(playlist_index)d</>；补零位数取决于列表长度。");
 
-	cb_playlist_folder.tooltip("Put playlist videos in a subfolder of the output folder, using the\nplaylist title as the name of "
-		"the subfolder.\n\nThis works by automatically prepending <bold>\"%(playlist_title)s\\\"</> to the\noutput template defined above, "
-		"whenever a playlist is downloaded\n\nSince v1.9, this setting also applies to channels and channel tabs.\n\n"
-		"Since v2.1, this setting also applies to Bandcamp albums (prepends\n<bold>\"%(artist)s\\%(album)s\\\"</> to the output template).");
+	cb_playlist_folder.tooltip("将播放列表的视频保存到以列表标题命名的子文件夹。\n下载时在输出模板前添加 <bold>%(playlist_title)s\\</>。\n此选项也适用于频道和频道标签页；Bandcamp 专辑使用 <bold>%(artist)s\\%(album)s\\</>。");
 
-	cb_add_on_focus.tooltip("If this option is checked, whenever the main window receives the input focus,\nany URL in the clipboard will "
-		"be automatically added to the queue (if it's not\nalready there). This only works for a single URL (if you have a multi-line list "
-		"of\nURLs, you'll have to add it manually)."
+	cb_add_on_focus.tooltip("主窗口获得焦点时，自动将剪贴板中的单个网址加入队列（已存在则忽略）。\n多行网址仍需手动粘贴。"
 	);
 
-	cb_display_custom_filenames.tooltip("You can provide a custom file name for a queue item by selecting\n<bold>Set file name for item #</> "
-		"from the queue menu, or by pressing <bold>F2</>.\nThis name is \"custom\" because it overrides the output template\ndefined in the settings.\n\n"
-		"If you check this option, then if a queue item has a custom file name,\nit will be shown in the \"Media title\" column instead of the media title."
+	cb_display_custom_filenames.tooltip("在队列右键菜单中选择“设置文件名”，或按 F2，可覆盖输出模板指定的名称。\n启用此选项后，在“媒体标题”列中显示该自定义文件名。"
 	);
 
-	const auto res_tip {"Download the best video with the largest resolution available that is\n"
-		"not higher than the selected value. Resolution is determined using the\n"
-		"smallest dimension, so this works correctly for vertical videos as well."},
+	const auto res_tip {"优先选择不超过指定分辨率的最佳视频格式。\n分辨率按较短边计算，同样适用于竖屏视频。"},
 
-		maxdl_tip {"When a queue item finishes, the program automatically starts the next one.\nThis setting lets you make it "
-		"start the next two or more items (up to 10).\n\nDoes not limit the number of manually started queue items "
-		"(you can have\nmore than 10 concurrent downloads if you want, but you have to start\nthe ones after the 10th manually)."},
+		maxdl_tip {"一个队列项目完成后，自动开始接下来的一个或多个项目（最多 10 个）。\n此设置不限制手动启动的下载数量。"},
 
-		template_tip {"The output template tells yt-dlp how to name the downloaded files.\nIt's a powerful way to compose the output "
-		"file name, allowing many \ncharacteristics of the downloaded media to be incorporated \ninto the name. To learn how to use it, "
-		"see the documentation at \n<bold>https://github.com/yt-dlp/yt-dlp#output-template</>"},
+		template_tip {"输出模板决定下载文件的名称，可以插入媒体标题、编号等信息。\n示例：<bold>%(title)s.%(ext)s</>。\n文档：<bold>https://github.com/yt-dlp/yt-dlp#output-template</>"},
 
-		playlist_tip {"This is a string that the program optionally incorporates into the \noutput template defined above, only when "
-		"downloading \nYouTube playlists. It is prepended to the output template string, \nso with default values, the result would "
-		"look like this:\n\n<bold>\"%(playlist_index)d - %(title)s.%(ext)s\"</>\n\nThis output template produces filenames that look like this:\n\n"
-		"<bold>1 - title.ext\n2 - title.ext\n3 - title.ext</>\n\nLeave blank if you don't want playlist videos to be numbered."},
+		playlist_tip {"下载 YouTube 播放列表时，在输出模板前添加此编号模板。\n默认结果：<bold>%(playlist_index)d - %(title)s.%(ext)s</>。\n\n如不需要编号，请留空。"},
 
-		container_tip {"A container format allows multiple data streams to be embedded\ninto a single file. A media container is a file that "
-		"can contain multiple \nvideo and/or audio streams. The codec with which the video and \naudio streams are encoded affects which "
-		"container they can fit in.\n\nFor example, the MPEG-4 video container format (<bold>.mp4</> file) can \ncontain audio streams encoded with the "
-		"<bold>mp4a</> codec, but doesn't\nsupport audio encoded with the <bold>opus</> codec (which yt-dlp considers\nto be the better "
-		"of the two).\n\nFor that reason, if you select <bold>mp4</> "
-		"as the preferred video container,\nyou must select <bold>m4a</> as the preferred audio container. Otherwise,\nyt-dlp will be forced to "
-		"merge the streams into an <bold>.mkv</> file instead\nof an <bold>.mp4</> file (when combining an <bold>.mp4</> video-only format "
-		"with\nan incompatible audio-only format)."},
+		container_tip {"容器用于在同一个文件中保存视频、音频等数据流。不同容器支持的编码组合不同。\n若所选视频和音频无法组合到首选容器，程序可能改用 MKV。容器格式与音视频编码是不同的设置。"},
 
-		proxy_tip {"Tell yt-dlp to use a proxy server (this passes <bold>--proxy</> to yt-dlp)\n\n"
-		"\tHTTP proxy:  <bold>IP_ADDRESS:PORT</>\n\n\tSOCKS proxy:  <bold>socks5://IP_ADDRESS:PORT</>\n\n"
-		"\tSOCKS proxy with authentication:  <bold>socks5://USER:PASS@IP_ADDRESS:PORT</>\t"},
+		proxy_tip {"通过 <bold>--proxy</> 指定代理。\n\nHTTP：<bold>IP_ADDRESS:PORT</>\nSOCKS：<bold>socks5://IP_ADDRESS:PORT</>\n带认证的 SOCKS：<bold>socks5://USER:PASS@IP_ADDRESS:PORT</>"},
 
-		codec_tip {"In the context of digital video and audio, a codec is a processing algorithm\nused to compress data, and the "
-		"process of compressing data with a codec\nis called \"encoding\".\n\nA website like YouTube may offer multiple formats that "
-		"use the same\ncontainer, but different codecs, so specifying a preferred codec can prevent\nunwanted formats from being downloaded."},
+		codec_tip {"编码器决定音视频数据的压缩方式。同一个容器可以使用不同编码。\n指定编码偏好可优先下载适合播放设备的格式。"},
 
-		ffmpeg_tip {"Here you can tell the program where to put the FFmpeg files when\nit updates FFmpeg (via Settings->Updater). "
-			"If the folder you choose\nis not the yt-dlp folder, the program will offer to set up yt-dlp\n(via config file) "
-			"to look for the FFmpeg files in that folder.\n<bold>.\\ </>means the program folder (where ytdlp-interface.exe is located)."},
+		ffmpeg_tip {"设置通过更新器下载的 FFmpeg 文件保存位置。\n若与 yt-dlp 不在同一文件夹，程序会提供配置路径的选项。\n<bold>.\\</> 表示 ytdlp-interface.exe 所在的文件夹。"},
 
-		ytdlp_tip {"<bold>.\\ </>means the program folder (where ytdlp-interface.exe is located)."},
+		ytdlp_tip {"<bold>.\\</> 表示 ytdlp-interface.exe 所在的文件夹。"},
 		
-		maxinfo_tip {"When a URL is added to the queue, the program uses yt-dlp to get info about it,\nand about the media that can be "
-			"downloaded from it. When adding multiple\nURLs to the queue (either by pasting a list of URLs or by splitting a playlist), "
-			"the\nprogram uses multiple concurrent yt-dlp instances, up to a maximum of 4 by\ndefault. You can increase this number "
-			"up to the number of logical processors on\nyour system, but you should be aware of a few considerations before you do.\n\n"
-			"First, if you're downloading a lot from YouTube, you should consider the\npossibility that you might get banned "
-			"for making too many requests too quickly.\nI don't know how likely that is to happen, but I know it's possible.\n\n"
-			"Second, yt-dlp eats a lot of CPU resources for what it does, because Python is an\ninterpreted language (yt-dlp.exe "
-			"contains the Python interpreter, which runs the\nyt-dlp program). It's possible to max out your CPU utilization by "
-			"increasing this\nnumber, and the responsiveness of the interface may be lowered."},
+		maxinfo_tip {"添加网址时使用 yt-dlp 获取媒体信息。批量添加时，默认最多同时运行 4 个实例。\n可增加到系统逻辑处理器数量，但过多请求可能触发网站限制，也会增加 CPU 占用并降低界面响应速度。"},
 		
-		cookie_options_tip {"Additional options for the <bold>--cookies-from-browser</> argument,\nin the format <bold>[:PROFILE][::CONTAINER]</>."
-			"\n\nThe text you type is passed to yt-dlp as is, without any validation."},
+		cookie_options_tip {"--cookies-from-browser 的额外选项，格式为 <bold>[:PROFILE][::CONTAINER]</>。\n\n输入内容会原样传递给 yt-dlp，不做校验。"},
 
-		cookies_tip {"The program will use <bold>--cookies-from-browser</> when downloading\nand when getting data for a URL.\n\nThis will cause "
-			"yt-dlp to automatically authenticate with the website\nyou're downloading from, if you're logged into it in your browser.\n\n"
-			"Use the drop-down list to select which browser to get cookies from,\nand type any additional options in the textbox.\n\n"
-			"WARNING: Due to recent changes to how Chrome handles cookies,\nthis will probably not work with Chrome."};
+		cookies_tip {"下载和解析网址时使用 <bold>--cookies-from-browser</>。\n若浏览器已登录目标网站，yt-dlp 可尝试使用该登录状态。选择浏览器并填写额外选项。\n浏览器的 Cookies 加密或权限限制可能导致读取失败。"};
 
 	l_cookie_options.tooltip(cookie_options_tip);
 	tb_cookies.tooltip(cookie_options_tip);
@@ -1191,23 +1133,23 @@ void GUI::fm_settings()
 	};
 
 	for(auto &opt : com_vcodec_options)
-		com_vcodec.push_back(" " + nana::to_utf8(opt));
+		com_vcodec.push_back(" " + i18n::tr(nana::to_utf8(opt)));
 	com_vcodec.events().selected(premium_handler);
 
 	for(auto &opt : com_acodec_options)
-		com_acodec.push_back(" " + nana::to_utf8(opt));
+		com_acodec.push_back(" " + i18n::tr(nana::to_utf8(opt)));
 
 	for(auto &opt : com_video_options)
-		com_video.push_back(" " + nana::to_utf8(opt));
+		com_video.push_back(" " + i18n::tr(nana::to_utf8(opt)));
 
 	for(auto &opt : com_audio_options)
-		com_audio.push_back(" " + nana::to_utf8(opt));
+		com_audio.push_back(" " + i18n::tr(nana::to_utf8(opt)));
 
 	for(auto &opt : com_res_options)
-		com_res.push_back(" " + nana::to_utf8(opt));
+		com_res.push_back(" " + i18n::tr(nana::to_utf8(opt)));
 
 	for(auto &opt : com_cookies_options)
-		com_cookies.push_back(" " + nana::to_utf8(opt));
+		com_cookies.push_back(" " + i18n::tr(nana::to_utf8(opt)));
 
 	com_res.events().selected(premium_handler);
 	com_res.tooltip(res_tip);
@@ -1370,18 +1312,13 @@ void GUI::fm_settings_info(nana::window owner)
 	p.text_align(align::left, align_v::top);
 	p.format(true);
 
-	std::string ptext {R"(By default (when you don't explicitly request a specific format), yt-dlp downloads the best audio/video
-formats, which it judges according to certain parameters. For example, the main criteria that determine the "best" YouTube video format are quality, resolution, and framerate (prioritized in that order).
+	std::string ptext {R"(默认情况下，yt-dlp 会自动选择最佳音视频格式。分辨率、容器、编码和帧率偏好会通过 <bold color=0x>-S</> 参数传递给 yt-dlp。
 
-The four settings pictured above allow you to change what yt-dlp considers "the best" in each of those categories, at the same time reordering how the categories are prioritised. For example, if you
-select "1080" for the preferred resolution, then yt-dlp will consider 1080p to be the best resolution, instead of the highest available. With the preferences configured like in the above picture, yt-dlp will first identify all the video formats with 1080p resolution, then out of those, all with .mp4 extension, and out of those, all with the highest framerate, and so on until one format is chosen.
+例如，首选分辨率设为 1080 时，优先选择不超过 1080p 的最佳格式。选择 MP4 等容器会影响格式排序；实际可用格式由网站提供。
 
-Of course, this is all optional � you can select "none" for each of these settings to let yt-dlp use its default priorities. Also, the program only uses these settings when you don't request a specific format
-(like <bold color=0x>-f 303+251</>, or <bold color=0x>-f ba</>).
+将偏好设为“无”可使用 yt-dlp 的默认排序。手动指定 <bold color=0x>-f 303+251</> 或 <bold color=0x>-f ba</> 等格式时，这些自动排序设置可能不再决定最终选择。
 
-The program lets you manually select formats from a list, but it should be clear that you don't have to
-do that. That feature can be useful in certain cases, but yt-dlp does a good job of automatically selecting the best formats for whatever you're downloading. The four preferences discussed here
-(which the program communicates to yt-dlp with the <bold color=0x>-S</> argument) should be enough to ensure that in most cases, you can just click the download button without worrying about formats.)"};
+通常只需设置偏好，再点击下载。也可以打开“格式”窗口，手动选择视频和音频。)"};
 
 	fm["pic"] << pic;
 	fm["p"] << p;
@@ -1424,7 +1361,7 @@ void GUI::make_updater_page(themed_form &parent)
 		<weight=25 <l_ffmpeg weight=132> <weight=10> <l_ffmpeg_path> > <weight=20>
 		<weight=30 <l_ver_ytdlp weight=170> <weight=10> <l_ytdlp_text> > <weight=11>
 		<weight=30 <l_ver_ffmpeg weight=170> <weight=10> <l_ffmpeg_text> > <weight=13>
-		<channel weight=25 <l_channel weight=170> <weight=20> <cb_chan_stable weight=75> <weight=10> <cb_chan_nightly weight=85> <> >
+		<channel weight=25 <l_channel weight=170> <weight=20> <cb_chan_stable weight=75> <weight=10> <cb_chan_nightly weight=120> <> >
 		<channel_spacer weight=17> <weight=25 <weight=14> <cb_ffplay>> <weight=20>
 		<weight=30 <prog_misc>> <weight=25>
 		<weight=30 <> <btn_update_ytdlp weight=150> <weight=20> <btn_update_ffmpeg weight=160> <> >
@@ -1510,14 +1447,11 @@ void GUI::make_updater_page(themed_form &parent)
 	cb_chan_stable.radio(true);
 	cb_chan_nightly.radio(true);
 
-	cb_chan_stable.tooltip("\"Stable\" releases are well tested and have no major bugs,\n"
-		"but there's a relatively long time until one comes out.");
-	cb_chan_nightly.tooltip("\"Nightly\" releases come out every day around midnight\nUTC and contain the latest patches and changes. "
-		"This is\nthe recommended channel for regular users of yt-dlp.");
-	std::string selfonly_tip {"To update the program, an archive is downloaded from GitHub,\nwhich contains the following files:\n\n<bold>7z.dll\n"};
+	cb_chan_stable.tooltip("「稳定版」经过较完整测试，通常不会有重大问题，\n但新版推出的间隔也相对较久。");
+	cb_chan_nightly.tooltip("「每日构建版」几乎每天 UTC 午夜左右发布，\n包含最新修补与变更。\n对经常使用 yt-dlp 的用户来说，这通常是较建议的频道。");
+	std::string selfonly_tip {"更新程序时，会从 GitHub 下载一个压缩包，内容包含下列文件：\n\n<bold>7z.dll\n"};
 	selfonly_tip += win7 || !X64 ? "libwinpthread-1.dll\nqjs.exe\n" : "deno.exe\n";
-	selfonly_tip += "ffmpeg.exe\nffprobe.exe\nyt-dlp.exe\nytdlp-interface.exe</>\n\nCheck this option if you don't want your current "
-		"versions of\nyt-dlp and ffmpeg to be overwritten with those in the archive.";
+	selfonly_tip += "ffmpeg.exe\nffprobe.exe\nyt-dlp.exe\nytdlp-interface.exe</>\n\n如果你不想让当前的 yt-dlp 与 ffmpeg 被压缩包内版本覆盖，请勾选这个选项。";
 	cb_selfonly.tooltip(selfonly_tip);
 
 	if(!rgp_chan.size())
@@ -1553,7 +1487,7 @@ void GUI::make_updater_page(themed_form &parent)
 		}
 		else fb.init_path(appdir);
 		fb.allow_multi_select(false);
-		fb.add_filter("yt-dlp executable", ytdlp_fname + (win7 ? "" : ";ytdl-patched-red.exe"));
+		fb.add_filter("yt-dlp 可执行文件", ytdlp_fname + (win7 ? "" : ";ytdl-patched-red.exe"));
 		fb.title("Locate and select " + ytdlp_fname + (win7 ? "" : " or ytdl-patched-red.exe"));
 		auto res {fb()};
 		if(res.size())
@@ -1575,7 +1509,7 @@ void GUI::make_updater_page(themed_form &parent)
 	{
 		nana::folderbox fb {updater, conf.ffmpeg_path.empty() ? (conf.ytdlp_path.empty() ? appdir : conf.ytdlp_path.parent_path()) : conf.ffmpeg_path};
 		fb.allow_multi_select(false);
-		fb.title("Locate and select the FFmpeg folder");
+		fb.title("选择 FFmpeg 文件夹");
 		auto res {fb()};
 		if(res.size())
 		{
@@ -1585,10 +1519,7 @@ void GUI::make_updater_page(themed_form &parent)
 			if(!updater_check_paths(true))
 			{
 				widgets::msgbox mbox {parent, "Custom FFmpeg folder", nana::msgbox::yes_no};
-				mbox << conf.ffmpeg_path.string() << "\n\nThe selected folder doesn't seem to contain ffmpeg.exe. "
-					"Are you sure you want to use this folder for the FFmpeg files?\n\nPress \"Yes\" if you intend to "
-					"add the FFmpeg files to the folder (you can use the updater to download the latest version).\n\n"
-					"Press \"No\" to choose a different folder.";
+				mbox << conf.ffmpeg_path.string() << "\n\n所选文件夹中没有找到 ffmpeg.exe，是否仍使用此位置？\n\n选择“是”后可通过更新器下载 FFmpeg；选择“否”则重新选择文件夹。";
 				if(mbox() == IDNO)
 				{
 					conf.ffmpeg_path = orig_path;
@@ -1612,13 +1543,7 @@ void GUI::make_updater_page(themed_form &parent)
 					{
 						widgets::msgbox mbox {parent, "Custom FFmpeg folder", nana::msgbox::yes_no};
 						mbox.icon(nana::msgbox::icon_question);
-						std::string msg {"When updating FFmpeg, the program will put the FFmpeg files in the "
-							"folder you selected. There's just one problem though, the folder you selected is not "
-							"the same as the folder that contains yt-dlp.exe, so yt-dlp will not know how to find "
-							"the FFmpeg files.\n\n[ Yes ] To fix that, a configuration file (yt-dlp.conf) containing the "
-							"argument \"--ffmpeg-location\" can be created in the yt-dlp folder.\n\n[ No ] Or, the program "
-							"can pass \"--ffmpeg-location\" to yt-dlp through the command line.\n\n"
-							"Should the program create yt-dlp.conf for you now?"};
+						std::string msg {"所选 FFmpeg 文件夹与 yt-dlp 不在同一位置，需要告知 yt-dlp 如何找到 FFmpeg。\n\n“是”：在 yt-dlp 文件夹创建包含 --ffmpeg-location 的 yt-dlp.conf。\n“否”：通过命令行传递路径。\n\n现在创建配置文件吗？"};
 						if((mbox << msg)() == IDYES)
 						{
 							auto conf_path {ytdlp_dir / "yt-dlp.conf"};
@@ -1628,17 +1553,14 @@ void GUI::make_updater_page(themed_form &parent)
 								of << "--ffmpeg-location " << conf.ffmpeg_path;
 								widgets::msgbox mb {parent, "Custom FFmpeg folder"};
 								mb.icon(nana::msgbox::icon_information) << conf_path.string() <<
-									"\n\nThe file has been created, and yt-dlp should now know where to find the FFmpeg files.";
+									"\n\n配置文件已创建，yt-dlp 现在可以找到 FFmpeg。";
 								mb.show();
 							}
 							else
 							{
 								widgets::msgbox err {parent, "Custom FFmpeg folder"};
 								err.icon(nana::msgbox::icon_error);
-								err << conf_path.string() << "\n\nCould not open the file for writing! "
-									"Make sure the yt-dlp folder isn't \"Program Files\" or any other "
-									"folder that requires elevated priviliges for write access. Otherwise, "
-									"you must use \"Run as administrator\" to launch ytdlp-interface.";
+								err << conf_path.string() << "\n\n无法写入文件。请使用可写文件夹；若确需写入受保护位置，可尝试以管理员身份运行。";
 								err.show();
 							}
 						}
@@ -1658,12 +1580,7 @@ void GUI::make_updater_page(themed_form &parent)
 							{
 								widgets::msgbox mbox {parent, "Custom FFmpeg folder", nana::msgbox::yes_no};
 								mbox.icon(nana::msgbox::icon_question);
-								std::string msg {"The yt-dlp folder contains a configuration file (yt-dlp.conf), "
-									"but the file doesn't contain the argument \"--ffmpeg-location\". That argument "
-									"must be present to tell yt-dlp where to find the FFmpeg files. "
-									"Should the program add the argument to the config file?\n\n"
-									"If you select \"no\", the program will have to pass \"--ffmpeg-location\" "
-									"to yt-dlp through the command line."};
+								std::string msg {"yt-dlp 文件夹中的 yt-dlp.conf 不包含 --ffmpeg-location，无法指定 FFmpeg 所在位置。\n\n是否将该参数加入配置文件？选择“否”则通过命令行传递。"};
 								if((mbox << msg)() == IDYES)
 								{
 									std::ofstream ofs {ytdlp_dir / "yt-dlp.conf", std::ios_base::app};
@@ -1678,10 +1595,7 @@ void GUI::make_updater_page(themed_form &parent)
 									{
 										widgets::msgbox err {parent, "Custom FFmpeg folder"};
 										err.icon(nana::msgbox::icon_error);
-										err << "Could not open file for writing! "
-											"Make sure the yt-dlp folder isn't \"Program Files\" or any other "
-											"folder that requires elevated priviliges for write access. Otherwise, "
-											"you must use \"Run as administrator\" to launch ytdlp-interface.";
+										err << "无法写入文件。请使用可写文件夹；若确需写入受保护位置，可尝试以管理员身份运行。";
 										err.show();
 									}
 								}
@@ -1747,8 +1661,7 @@ void GUI::make_updater_page(themed_form &parent)
 				{
 					::widgets::msgbox mbox {parent, "No place to put the ffmpeg files"};
 					mbox.icon(nana::msgbox::icon_error);
-					(mbox << "Neither the program folder, nor the specified yt-dlp folder can be written in. Run the program "
-						"as administrator to fix that.")();
+					(mbox << "程序文件夹和所选 yt-dlp 文件夹均不可写。请改用可写文件夹，或以管理员身份运行。")();
 				}
 				return;
 			}
@@ -1768,8 +1681,7 @@ void GUI::make_updater_page(themed_form &parent)
 			{
 				::widgets::msgbox mbox {parent, "No place to put yt-dlp.exe"};
 				mbox.icon(nana::msgbox::icon_error);
-				(mbox << "The path for yt-dlp is not defined, and the program can't write in the folder "
-					"it's currently in (running it as administrator should fix that).")();
+				(mbox << "尚未设置 yt-dlp 路径，且当前程序文件夹不可写。请改用可写文件夹，或以管理员身份运行。")();
 			}
 		}
 		else
@@ -1786,8 +1698,7 @@ void GUI::make_updater_page(themed_form &parent)
 				{
 					::widgets::msgbox mbox {parent, "No place to put yt-dlp.exe"};
 					mbox.icon(nana::msgbox::icon_error);
-					(mbox << "Neither the program folder, nor the specified yt-dlp folder can be written in. Running the program "
-						"as administrator should fix that.")();
+					(mbox << "程序文件夹和所选 yt-dlp 文件夹均不可写。请改用可写文件夹，或以管理员身份运行。")();
 				}
 			}
 		}
@@ -2062,7 +1973,7 @@ void GUI::updater_update_self(themed_form &parent)
 	static fs::path arc_path;
 	static bool btnffmpeg_state, btnytdlp_state;
 	arc_path = fs::temp_directory_path() / (X64 ? (win7 ? "ytdlp-interface_win7.7z" : "ytdlp-interface.7z") : (win7 ? "ytdlp-interface_x86_win7.7z" : "ytdlp-interface_x86.7z"));
-	if(btn_update.caption() == "Update")
+	if(btn_update.caption() == i18n::tr("Update"))
 	{
 		btn_update.caption("Cancel");
 		btnffmpeg_state = btn_update_ffmpeg.enabled();
@@ -2076,7 +1987,7 @@ void GUI::updater_update_self(themed_form &parent)
 			{
 				::widgets::msgbox mbox {parent, "ytdlp-interface update error"};
 				mbox.icon(nana::msgbox::icon_error);
-				(mbox << "The latest release on GitHub doesn't seem to contain a 32-bit package!")();
+				(mbox << "GitHub 最新版本中没有找到 32 位软件包。")();
 				btn_update.caption("Update");
 				thr_updater.detach();
 				return;
@@ -2085,7 +1996,7 @@ void GUI::updater_update_self(themed_form &parent)
 			{
 				::widgets::msgbox mbox {parent, "ytdlp-interface update error"};
 				mbox.icon(nana::msgbox::icon_error);
-				(mbox << "The latest release on GitHub doesn't seem to contain a Windows 7 package!")();
+				(mbox << "GitHub 最新版本中没有找到 Windows 7 软件包。")();
 				btn_update.caption("Update");
 				thr_updater.detach();
 				return;
@@ -2215,7 +2126,7 @@ void GUI::updater_update_self(themed_form &parent)
 
 void GUI::updater_update_deno(themed_form &parent)
 {
-	if(btn_update_deno.caption() != "Cancel")
+	if(btn_update_deno.caption() != i18n::tr("Cancel"))
 	{
 		btn_update_deno.caption("Cancel");
 		thr_updater_deno = std::thread {[this]
@@ -2294,7 +2205,7 @@ void GUI::updater_update_misc(bool ytdlp, fs::path target)
 
 	static auto btntext_ffmpeg {btn_update_ffmpeg.caption()}, btntext_ytdlp {btn_update_ytdlp.caption()};
 
-	if(btn->caption() != "Cancel")
+	if(btn->caption() != i18n::tr("Cancel"))
 	{
 		btnffmpeg_state = btn_update_ffmpeg.enabled();
 		btnytdlp_state = btn_update_ytdlp.enabled();
@@ -2380,7 +2291,7 @@ void GUI::updater_update_misc(bool ytdlp, fs::path target)
 							}
 							else prog_updater_misc.caption("Error: " + error);
 						}
-						else prog_updater_misc.caption("!!! FAILED TO CREATE TEMPORARY DIRECTORY !!!");
+						else prog_updater_misc.caption("!!! 无法创建临时文件夹 !!!");
 
 						fs::remove(arc_path, ec);
 						fs::remove_all(tempdir, ec);

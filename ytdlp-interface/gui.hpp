@@ -234,7 +234,7 @@ private:
 	widgets::Textbox tbrate {gpopt};
 	widgets::Progress prog {*this, this};
 	widgets::Button btn_ytfmtlist {*this, "Select formats"}, btndl {*this, "Start download"}, btnlabel {gpopt}, btnerase {gpopt},
-		btnq {*this, "Show output"}, btncopy {*this, "Apply options to all queue items"};
+		btnq {*this, "Show output"}, btncopy {*this, "将选项应用到所有队列项目"};
 	widgets::Label l_out {gpopt, "Download folder:"}, l_rate {gpopt, "Download rate limit:"}, l_chap {gpopt, "Chapters:"};
 	widgets::path_label l_outpath {gpopt, &conf.outpath};
 	widgets::Combox com_rate {gpopt}, com_args {gpopt}, com_chap {gpopt};
@@ -327,32 +327,26 @@ private:
 
 	std::unordered_map<std::string, std::pair<std::string, std::string>> sblock_infos
 	{
-		{"all", {"All", "Select this to indicate all categories."}},
-		{"sponsor", {"Sponsor", "Segments promoting a product or service not directly related to the creator."}},
+		{"all", {"全部", "选择此项表示包含所有分类。"}},
+		{"sponsor", {"赞助内容", "推广与创作者本身没有直接关系的产品或服务片段。"}},
 
-		{"intro", {"Intermission/Intro Animation", "Segments typically found at the start of a video that include an animation, "
-		          "still frame or clip which are also seen in other videos by the same creator. This can include livestream pauses "
-		          "with no content\n(looping animations or chat windows) and Copyright / Fair Use disclaimers."}},
+		{"intro", {"开场动画／中场过场", "通常出现在视频开头，包含动画、定格画面或创作者其他视频也会出现的片段。这也可能包含没有实际内容的直播暂停画面\n（例如循环动画或聊天室画面），以及版权／合理使用声明。"}},
 
-		{"outro", {"Endcards/Credits (Outro)", "Typically near or at the end of the video when the credits pop up and/or endcards are shown."}},
+		{"outro", {"结尾卡／片尾名单", "通常出现在视频尾声，显示片尾名单与／或结尾卡的片段。"}},
 
-		{"selfpromo", {"Unpaid/Self Promotion", "Segments promoting a product or service that is directly related to the creator themselves.\n"
-		              "This usually includes merchandise or promotion of monetized platforms."}},
+		{"selfpromo", {"非付费／自我宣传", "推广与创作者本人直接相关的产品或服务片段。\n通常包括周边商品或其他可营利平台的宣传。"}},
 
-		{"preview", {"Preview/Recap", "Collection of clips that show what is coming up in in this video or other videos in a series."}},
+		{"preview", {"预告／回顾", "用来展示本视频或系列其他视频即将出现内容的剪辑片段。"}},
 
-		{"hook", {"Hook/Greetings", "Narrated trailers for the upcoming video, greetings and goodbyes. Does not include conclusions with information."}},
+		{"hook", {"开场钩子／问候", "对即将开始内容的口播预告、开场招呼与结尾道别。不包含带有信息性的总结内容。"}},
 
-		{"filler", {"Filler Tangent/Jokes", "Tangential scenes added only for filler or humor, that are not required to understand the main "
-		           "content of the video. This can also include: Timelapses / B-Roll, Fake Sponsors and slow-motion clips that do not provide "
-		           "any context or are used as replays or B-roll."}},
+		{"filler", {"填充闲聊／玩笑", "仅用于填充篇幅或制造幽默、对理解视频主内容并非必要的片段。也可能包括缩时画面、B-roll、假赞助内容，以及没有提供额外信息的慢动作或重播片段。"}},
 
-		{"interaction", {"Interaction Reminder (Subscribe)", "Explicit reminders to like, subscribe or interact with them on any paid or "
-			            "free platform(s)\n(e.g. click on a video)."}},
+		{"interaction", {"互动提醒（订阅）", "明确提醒观众按赞、订阅，或在任何付费／免费平台上与创作者互动的片段\n（例如点击视频）。"}},
 
-		{"music_offtopic", {"Music: Non-Music Section", "Section devoid of music in videos which feature music as the primary content."}},
-		{"poi_highlight", {"Highlight", "A point of interest in the video, possibly the most important part of the video."}},
-		{"chapter", {"Chapter", "Chapters designated by SponsorBlock (presumably in a video that doesn't have chapters otherwise)."}}
+		{"music_offtopic", {"音乐视频中的非音乐片段", "在以音乐为主要内容的视频中，不含音乐的片段。"}},
+		{"poi_highlight", {"重点片段", "视频中的重点时刻，可能是整支视频最重要的部分。"}},
+		{"chapter", {"章节", "由 SponsorBlock 标记出的章节（通常用于原视频本身没有章节的情况）。"}}
 	};
 
 	public:
@@ -371,7 +365,9 @@ private:
 				if(!el.first.empty())
 				{
 					cat++;
-					lbq.append(el.first).inline_factory(1, nana::pat::make_factory<inline_widget>());
+					auto new_cat {lbq.append(el.first)};
+					new_cat.inline_factory(1, nana::pat::make_factory<inline_widget>());
+					new_cat.inline_factory(3, nana::pat::make_factory<translated_inline_widget>());
 				}
 				for(auto &url : el.second)
 					add_url(nana::to_wstring(url), false, false, cat);

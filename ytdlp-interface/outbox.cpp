@@ -130,7 +130,7 @@ void GUI::Outbox::create(GUI *parent, bool visible)
 			::widgets::Menu m;
 			m.item_pixels(24);			
 
-			m.append("Copy selection", [&](menu::item_proxy)
+			m.append("复制所选内容", [&](menu::item_proxy)
 			{
 				if(!t_selcopy_flash.started())
 					t_selcopy_flash.start();
@@ -139,7 +139,7 @@ void GUI::Outbox::create(GUI *parent, bool visible)
 
 			if(commands.contains(current_))
 			{
-				m.append("Copy command line", [this](menu::item_proxy)
+				m.append("复制命令行", [this](menu::item_proxy)
 				{
 					if(!t_cmdcopy_flash.started())
 						t_cmdcopy_flash.start();
@@ -149,7 +149,7 @@ void GUI::Outbox::create(GUI *parent, bool visible)
 				m.append_splitter();
 			}
 
-			m.append("Keyword highlighting", [this](menu::item_proxy)
+			m.append("关键字高亮", [this](menu::item_proxy)
 			{
 				conf.kwhilite = !conf.kwhilite;
 				highlight(conf.kwhilite);
@@ -180,7 +180,7 @@ void GUI::Outbox::create(GUI *parent, bool visible)
 				}
 			}).checked(conf.kwhilite);
 
-			m.append("Limited buffer size", [this](menu::item_proxy)
+			m.append("限制输出缓冲区大小", [this](menu::item_proxy)
 			{
 				conf.limit_output_buffer = !conf.limit_output_buffer;
 			}).checked(conf.limit_output_buffer);
@@ -251,7 +251,7 @@ void GUI::Outbox::append(std::wstring url, std::string text)
 	{
 		if(std::this_thread::get_id() == main_thread_id)
 		{
-			if(!visible() && url == pgui->qurl && pgui->btnq.caption().find("queue") != -1)
+			if(!visible() && url == pgui->qurl && pgui->btnq.caption() == i18n::tr("Show queue"))
 			{
 				widget::show();
 				pgui->overlay.hide();

@@ -118,34 +118,33 @@ void GUI::fm_colors(themed_form &parent)
 		tb_lbselfg {c_lbselfg, picker, &t_custom.lbselfg}, tb_lbselbg {c_lbselbg, picker, &t_custom.lbselbg},
 		tb_lbhilite {c_lbhilite , picker, &t_custom.lbhilite}, tb_lbskip {c_lbskip , picker, &t_custom.list_check_highlight_fg};
 
-	my_label l_label {c_label, "Label"}, l_fmbg {c_fmbg, "Window background"}, l_nimbus {c_nimbus, "Focus rectangle"},
-		l_sep {c_sep, "Separator"}, l_btnbg {c_btnbg, "Button background"}, l_btnfg {c_btnfg, "Button foreground"},
-		l_tbfg {c_tbfg, "Textbox foreground"}, l_tbsel {c_tbsel, "Textbox selection"}, l_headerbg {c_headerbg, "Listbox header"},
-		l_tbsel_unfocused {c_tbsel_unfocused, "Textbox sel. unfocused"}, l_gp {c_gp, "Group title"},
-		l_tree_selbg {c_tree_selbg, "Tree selection bground"}, l_tree_selfg {c_tree_selfg, "Tree selection border"},
-		l_tree_hilitebg {c_tree_hilitebg, "Tree hovered bground"}, l_tree_hilitefg {c_tree_hilitefg, "Tree hovered border"},
-		l_tree_parent {c_tree_parent, "Tree parent node"}, l_json_key {c_json_key, "JSON key"}, l_json_val {c_json_val, "JSON value"},
-		l_lbselbg {c_lbselbg, "Listbox selection bg"}, l_lbselfg {c_lbselfg, "Listbox sel. border"},
-		l_lbhilite {c_lbhilite, "Listbox hovered item"}, l_lbskip {c_lbskip, "Listbox special item"};
+	my_label l_label {c_label, "标签"}, l_fmbg {c_fmbg, "窗口背景"}, l_nimbus {c_nimbus, "焦点边框"},
+		l_sep {c_sep, "分隔线"}, l_btnbg {c_btnbg, "按钮背景"}, l_btnfg {c_btnfg, "按钮文字"},
+		l_tbfg {c_tbfg, "文本框文字"}, l_tbsel {c_tbsel, "文本框选区"}, l_headerbg {c_headerbg, "列表表头"},
+		l_tbsel_unfocused {c_tbsel_unfocused, "文本框失焦选区"}, l_gp {c_gp, "分组标题"},
+		l_tree_selbg {c_tree_selbg, "树形列表选中背景"}, l_tree_selfg {c_tree_selfg, "树形列表选中边框"},
+		l_tree_hilitebg {c_tree_hilitebg, "树形列表悬停背景"}, l_tree_hilitefg {c_tree_hilitefg, "树形列表悬停边框"},
+		l_tree_parent {c_tree_parent, "树形列表父节点"}, l_json_key {c_json_key, "JSON 键"}, l_json_val {c_json_val, "JSON 值"},
+		l_lbselbg {c_lbselbg, "列表选中背景"}, l_lbselfg {c_lbselfg, "列表选中边框"},
+		l_lbhilite {c_lbhilite, "列表悬停项目"}, l_lbskip {c_lbskip, "列表特殊项目"};
 
-	::widgets::Text l_itext {c_itext, "Info text"}, l_itext_error {c_itext_error, "Info text (error mode)"}, 
-		text_info {fm, "Right-click a color description to reset the color to its default value."};
+	::widgets::Text l_itext {c_itext, "信息文字"}, l_itext_error {c_itext_error, "错误信息文字"},
+		text_info {fm, "右键单击颜色说明可将该颜色恢复为默认值。"};
 	l_itext_error.error_mode(true);
 	::widgets::Separator sep {fm};
-	::widgets::cbox cbox {c_cbox, "Checkbox"};
-	::widgets::Button btnapply {fm, "Apply changes"}, btndef {fm, "Reset to default"}, btnsave {fm, "Save"}, btnload {fm, "Load"};
-	::widgets::Title title {c_title, "Large header"};
-	std::wstring url {L"URL box"};
+	::widgets::cbox cbox {c_cbox, "复选框"};
+	::widgets::Button btnapply {fm, "应用更改"}, btndef {fm, "Reset to default"}, btnsave {fm, "Save"}, btnload {fm, "Load"};
+	::widgets::Title title {c_title, "大标题"};
+	std::wstring url {L"网址框"};
 	fs::path path {"c:\\path\\box"};
 	::widgets::path_label l_url {c_url, &url}, l_path {c_path, &path};
 	api::effects_edge_nimbus(l_url, effects::edge_nimbus::none);
 	api::effects_edge_nimbus(l_path, effects::edge_nimbus::none);
-	auto tip {"The custom color theme is automatically saved to\nthe settings file when you click the apply button,\n"
-		"but you can also save/load it to/from an arbitrary file."};
+	auto tip {"点击“应用更改”会将自定义主题保存到设置文件。\n也可以将主题另存为独立文件，或从文件加载。"};
 	btnsave.tooltip(tip);
 	btnload.tooltip(tip);
 
-	::widgets::Group gp {fm, "JSON Viewer"};
+	::widgets::Group gp {fm, "JSON 查看器"};
 	gp.div("jtree margin=10");
 	gp.enable_format_caption(true);
 
@@ -165,9 +164,9 @@ void GUI::fm_colors(themed_form &parent)
 	lb.typeface(paint::font_info {"Calibri", 12});
 	lb.append_header("Media title", util::scale(200));
 	lb.append_header("Status", util::scale(90));
-	lb.at(0).append({"Good Media (part 1)", "queued"});
-	lb.at(0).append({"Media I will download later", "skip"});
-	lb.at(0).append({"Good Media (part 2)", "queued"});
+	lb.at(0).append({"示例视频（第 1 部分）", "queued"});
+	lb.at(0).append({"稍后下载的示例视频", "skip"});
+	lb.at(0).append({"示例视频（第 2 部分）", "queued"});
 	lb.at(0).at(1).check(true);
 	lb.at(0).at(2).select(true);
 
@@ -499,9 +498,9 @@ void GUI::fm_colors(themed_form &parent)
 		nana::filebox fb {fm, false};
 		fb.allow_multi_select(false);
 		if(theme::is_dark())
-			fb.add_filter("Dark theme file", "*.dtheme");
-		else fb.add_filter("Light theme file", "*.ltheme");
-		fb.title("Choose which file to save to");
+			fb.add_filter("深色主题文件", "*.dtheme");
+		else fb.add_filter("浅色主题文件", "*.ltheme");
+		fb.title("选择要保存的文件");
 		if(!theme_path.empty())
 			fb.init_file(theme_path);
 		else
@@ -528,9 +527,9 @@ void GUI::fm_colors(themed_form &parent)
 		nana::filebox fb {fm, true};
 		fb.allow_multi_select(false);
 		if(theme::is_dark())
-			fb.add_filter("Dark theme file", "*.dtheme");
-		else fb.add_filter("Light theme file", "*.ltheme");
-		fb.title("Choose which file to load from");
+			fb.add_filter("深色主题文件", "*.dtheme");
+		else fb.add_filter("浅色主题文件", "*.ltheme");
+		fb.title("选择要加载的文件");
 		if(!theme_path.empty())
 			fb.init_file(theme_path);
 		else
@@ -630,14 +629,14 @@ void container::refresh_btn_state()
 	auto clrconf {reinterpret_cast<nana::color*>(reinterpret_cast<intptr_t>(t_conf) + off)};
 	btn.enable(*tb.clr != *clrconf);
 	if(btn.enabled())
-		btn.tooltip("Revert unapplied changes");
+		btn.tooltip("撤销尚未应用的更改");
 	else btn.tooltip("");
 }
 
 
 void container::create(nana::window parent)
 {
-	using ::widgets::theme;
+	using widgets::theme;
 	using namespace nana;
 
 	containers.push_back(this);

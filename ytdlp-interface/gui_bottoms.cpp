@@ -121,8 +121,8 @@ void GUI::gui_bottoms::show(std::wstring key)
 		gui->l_outpath.tooltip("");
 	else
 	{
-		gui->l_outpath.tooltip("Custom file name:\n<bold>" + bot.outfile.filename().string() +
-			"</>\n(this overrides the output template from the settings)");
+		gui->l_outpath.tooltip("自定义文件名：\n<bold>" + bot.outfile.filename().string() +
+			"</>\n（覆盖设置中的输出模板）");
 	}
 	gui->show_btnfmt(!bot.vidinfo.empty());
 	if(!conf.common_dl_options && gui->lbq.item_count() > 1)

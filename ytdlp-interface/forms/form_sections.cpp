@@ -62,9 +62,9 @@ void GUI::fm_sections()
 		}
 	};
 
-	::widgets::Text l_start {fm, "Define section from"}, l_end {fm, "to"};
+	::widgets::Text l_start {fm, "片段开始时间"}, l_end {fm, "至"};
 	::widgets::Label l_help {fm, ""};
-	::widgets::Button btnadd {fm, "Add to list", true}, btnremove {fm, "Remove from list", true}, btnclear {fm, "Clear list", true},
+	::widgets::Button btnadd {fm, "添加到列表", true}, btnremove {fm, "从列表移除", true}, btnclear {fm, "清空列表", true},
 		btnclose {fm, "Close"};
 	::widgets::Listbox lbs {fm, nullptr, true};
 	tbox tbfirst {fm}, tbsecond {fm};
@@ -90,13 +90,7 @@ void GUI::fm_sections()
 	l_help.typeface(paint::font_info {"Tahoma", 10});
 	l_help.text_align(align::left, align_v::top);
 	l_help.format(true);
-	std::string helptext {"Here you can tell yt-dlp to download only a section (or multiple sections) of the media. "
-		"Define a section by specifying a start point and an end point, then add it to the list. The time points are "
-		"in the format <bold color=0x>[hour:][minute:]second</>.\n\nFor example, <bold color=0x>54</> means second 54, "
-		"<bold color=0x>9:54</> means minute 9 second 54, "
-		"and <bold color=0x>1:9:54</> means hour 1 minute 9 second 54.\nTo indicate the end of the media, put <bold color=0x>0</> "
-		"in the \"to\" field or leave it blank. \n\nThe downloading of sections is done through FFmpeg (which is much slower), "
-		"and each section is downloaded to its own file."};
+	std::string helptext {"在此设置仅下载媒体的一个或多个片段。输入开始时间和结束时间，然后添加到列表。\n\n时间格式：<bold color=0x>[小时:][分钟:]秒</>。例如，54 表示第 54 秒，9:54 表示 9 分 54 秒，1:9:54 表示 1 小时 9 分 54 秒。“至”设为 0 或留空表示媒体结尾。\n\n片段下载通过 FFmpeg 完成，速度可能较慢；每个片段保存为独立文件。"};
 
 	for(auto &val : bottom.sections)
 	{
@@ -178,17 +172,17 @@ void GUI::fm_sections()
 		timepoint tp1 {first}, tp2 {second};
 		if(first == "0" && second == "0")
 		{
-			(::widgets::msgbox {fm, "validation error"}.icon(nana::msgbox::icon_error) << "section spans entire length")();
+			(::widgets::msgbox {fm, "输入错误"}.icon(nana::msgbox::icon_error) << "该片段覆盖整个媒体，无需单独设置。")();
 			return;
 		}
 		if(tp1.equal(tp2))
 		{
-			(::widgets::msgbox {fm, "validation error"}.icon(nana::msgbox::icon_error) << "timepoints are identical")();
+			(::widgets::msgbox {fm, "输入错误"}.icon(nana::msgbox::icon_error) << "开始时间和结束时间相同。")();
 			return;
 		}
 		else if(tp1 > tp2 && second != "0")
 		{
-			(::widgets::msgbox {fm, "validation error"}.icon(nana::msgbox::icon_error) << "second timepoint precedes the first one")();
+			(::widgets::msgbox {fm, "输入错误"}.icon(nana::msgbox::icon_error) << "结束时间不能早于开始时间。")();
 			return;
 		}
 

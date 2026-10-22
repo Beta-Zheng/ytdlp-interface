@@ -27,11 +27,11 @@ void GUI::fm_subs()
 	)");
 
 	::widgets::Combox com_subs {fm};
-	::widgets::Title l_message {fm, "No subtitles available!"};
-	::widgets::Label l_sub_format {fm, "Subtitle format:"};
-	::widgets::Text l_info {fm}, l_help {fm, "Selection applies when using <bold>--embed-subs</> or <bold>--write-subs</>"};
-	::widgets::cbox cb_sub_selection {fm, "Make this selection the default for all downloads"};
-	::widgets::Button btn_ok {fm, "OK"}, btn_cancel {fm, "Cancel"}, btn_clear {fm};
+	::widgets::Title l_message {fm, "没有可用字幕！"};
+	::widgets::Label l_sub_format {fm, "字幕格式："};
+	::widgets::Text l_info {fm}, l_help {fm, "使用 <bold>--embed-subs</> 或 <bold>--write-subs</> 时应用所选字幕"};
+	::widgets::cbox cb_sub_selection {fm, "将此选择设为所有下载的默认设置"};
+	::widgets::Button btn_ok {fm, "确定"}, btn_cancel {fm, "Cancel"}, btn_clear {fm};
 	nana::picture pic_help {fm};
 
 	nana::paint::image img_help;	
@@ -61,8 +61,8 @@ void GUI::fm_subs()
 	lb_lang.column_resizable(false);
 	lb_lang.show_header(false);
 
-	btn_ok.tooltip("Use this selection when <bold>--embed-subs</> or <bold>--write-subs</> are used.");
-	btn_clear.tooltip("Stop using this for all downloads by default");
+	btn_ok.tooltip("使用 --embed-subs 或 --write-subs 时应用所选字幕。");
+	btn_clear.tooltip("清除所有下载的默认字幕设置");
 	btn_clear.events().click([&]
 	{
 		conf.sub_langs.clear();

@@ -26,10 +26,8 @@ void GUI::fm_json()
 	lcmd.text_align(align::left, align_v::top);
 	lcmd.format(true);
 
-	std::string lcmd_text_dark {"<color=0xb0b0b0>The data was obtained from yt-dlp using this command line:</>\n"
-		"<bold color=0xa09080>" + to_utf8(bottom.cmdinfo) + "</>"};
-	std::string lcmd_text_light {"<color=0x707070>The data was obtained from yt-dlp using this command line:</>\n"
-		"<bold color=0x8090a0>" + to_utf8(bottom.cmdinfo) + "</>"};
+	std::string lcmd_text_dark {"<color=0xb0b0b0>以下数据由 yt-dlp 通过此命令获取：</>\n<bold color=0xa09080>" + to_utf8(bottom.cmdinfo) + "</>"};
+	std::string lcmd_text_light {"<color=0x707070>以下数据由 yt-dlp 通过此命令获取：</>\n<bold color=0x8090a0>" + to_utf8(bottom.cmdinfo) + "</>"};
 	lcmd.events().expose([&]
 	{
 		lcmd.caption(theme::is_dark() ? lcmd_text_dark : lcmd_text_light);
@@ -55,7 +53,7 @@ void GUI::fm_json()
 				}
 				fb.allow_multi_select(false);
 				fb.add_filter(desc, filter);
-				fb.title("Save as");
+				fb.title("另存为");
 				auto res {fb()};
 				if(res.size())
 					return res.front();
@@ -79,7 +77,7 @@ void GUI::fm_json()
 						seltext.pop_back();
 					}
 					auto val {seltext.substr(pos)};
-					m.append("Copy selected value", [val, this](menu::item_proxy ip)
+					m.append("复制所选值", [val, this](menu::item_proxy ip)
 					{
 						util::set_clipboard_text(hwnd, to_wstring(val));
 					});
@@ -87,9 +85,9 @@ void GUI::fm_json()
 				}
 			}
 
-			m.append("Save as .txt", [&](menu::item_proxy ip)
+			m.append("另存为 .txt", [&](menu::item_proxy ip)
 			{
-				auto path {file_selector("Text file", "*.txt")};
+				auto path {file_selector("文本文件", "*.txt")};
 				if(!path.empty())
 				{
 					std::string text {"Text version of the JSON data for URL: " + to_utf8(bottom.url) + "\n\n"};
@@ -111,23 +109,23 @@ void GUI::fm_json()
 				}
 			});
 
-			m.append("Save as .json", [&](menu::item_proxy ip)
+			m.append("另存为 .json", [&](menu::item_proxy ip)
 			{
-				auto path {file_selector("JSON data format", "*.json")};
+				auto path {file_selector("JSON 数据文件", "*.json")};
 				if(!path.empty())
 					std::ofstream {path} << *t.jdata();
 			});
 
-			m.append("Save as .json (prettified)", [&](menu::item_proxy ip)
+			m.append("另存为 .json（格式化）", [&](menu::item_proxy ip)
 			{
-				auto path {file_selector("JSON data format", "*.json")};
+				auto path {file_selector("JSON 数据文件", "*.json")};
 				if(!path.empty())
 					std::ofstream {path} << std::setw(4) << *t.jdata();
 			});
 
 			m.append_splitter();
 
-			m.append("Hide null values", [&](menu::item_proxy ip)
+			m.append("隐藏 null 值", [&](menu::item_proxy ip)
 			{
 				conf.json_hide_null = !conf.json_hide_null;
 				ip.checked(conf.json_hide_null);

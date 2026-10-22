@@ -20,14 +20,14 @@ void GUI::fm_playlist()
 	)");
 
 	auto &bottom {bottoms.current()};
-	::widgets::Title l_title {fm, bottom.is_bcplaylist ? "Select which songs to download from the album" :
-		"Select which videos to download from the playlist"};
+	::widgets::Title l_title {fm, bottom.is_bcplaylist ? "选择要从专辑下载的歌曲" :
+		"选择要从播放列表下载的视频"};
 	if(bottom.is_scplaylist)
-		l_title.caption("Select which items to download from the playlist");
-	::widgets::Button btnall {fm, "Select all", true}, btnnone {fm, "Select none", true}, btnclose {fm, "Close"},
-		btnrange {fm, "Select range", true};
+		l_title.caption("选择要从播放列表下载的项目");
+	::widgets::Button btnall {fm, "全选", true}, btnnone {fm, "全不选", true}, btnclose {fm, "Close"},
+		btnrange {fm, "选择范围", true};
 	::widgets::Listbox lbv {fm, nullptr, true};
-	::widgets::Label l_first {fm, "First:"}, l_last {fm, "Last:"};
+	::widgets::Label l_first {fm, "起始："}, l_last {fm, "结束："};
 	::widgets::Textbox tbfirst {fm}, tblast {fm};
 	::widgets::Slider slfirst {fm}, sllast {fm};
 
@@ -83,7 +83,7 @@ void GUI::fm_playlist()
 	lbv.scheme().item_height_ex = 8;
 	lbv.append_header("", dpi_scale(25));
 	lbv.append_header("#", dpi_scale(45));
-	lbv.append_header(bottom.is_bcplaylist || bottom.is_scplaylist ? "Song title" : "Video title", dpi_scale(theme::is_dark() ? 743 : 739));
+	lbv.append_header(bottom.is_bcplaylist || bottom.is_scplaylist ? "歌曲标题" : "视频标题", dpi_scale(theme::is_dark() ? 743 : 739));
 	lbv.append_header("Duration", dpi_scale(75));
 	lbv.column_movable(false);
 	lbv.column_resizable(false);
@@ -113,7 +113,7 @@ void GUI::fm_playlist()
 			durstr += ':' + ss.str();
 		}
 
-		string title {"title not available"};
+		string title {"标题不可用"};
 		if(entry.contains("title"))
 			title = entry["title"].get<std::string>();
 		else if(entry.contains("id"))

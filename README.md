@@ -1,4 +1,7 @@
 # ytdlp-interface
+
+本地简体中文构建：参见 [构建与使用说明](NOTICE.zh-CN.md)，运行 `build_zh_cn.ps1` 编译并验证。
+
 This is a Windows graphical interface for [yt-dlp](https://github.com/yt-dlp/yt-dlp), that is designed as a simple YouTube downloader. Since v1.2, the interface also accepts non-YouTube URLs, so theoretically it can be used to download from any site that `yt-dlp` supports (see [the list](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)).
 
 To use, unpack the archive in a new folder at a location of your choice, and run `ytdlp-interface.exe`.

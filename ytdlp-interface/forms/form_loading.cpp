@@ -16,7 +16,7 @@ void GUI::fm_loading(bool saving)
 
 	fm.div("vert <weight=20> <title weight=30> <text> <weight=10>");
 
-	::widgets::Title title {fm, saving ? "Compiling data for unfinished queue items" : "Loading data for queue items"};
+	::widgets::Title title {fm, saving ? "正在整理未完成队列项目的数据" : "正在加载队列项目数据"};
 	::widgets::Text text {fm, "Please wait..."};
 	fm["title"] << title;
 	fm["text"] << text;
@@ -71,7 +71,7 @@ void GUI::fm_loading(bool saving)
 					}
 				}
 			}
-			title.caption("Saving the data");
+			title.caption("正在保存数据");
 			std::ofstream {infopath} << unfinished_qitems_data;
 			if(thr_qitem_data.joinable())
 				thr_qitem_data.detach();
@@ -90,7 +90,7 @@ void GUI::fm_loading(bool saving)
 			std::error_code ec;
 			fs::remove(infopath, ec);
 			if(good)
-				title.caption("Recreating the queue");
+				title.caption("正在恢复队列");
 			init_qitems();
 			if(thr_qitem_data.joinable())
 				thr_qitem_data.detach();

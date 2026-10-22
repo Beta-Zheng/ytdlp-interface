@@ -33,16 +33,15 @@ void GUI::fm_formats()
 		)");
 
 	::widgets::Title l_title {fm};
-	::widgets::Label l_dur {fm, "Duration:"}, l_chap {fm, "Chapters:"},
-		l_upl {fm, "Uploader:"}, l_date {fm, "Upload date:"};
+	::widgets::Label l_dur {fm, "时长："}, l_chap {fm, "Chapters:"},
+		l_upl {fm, "上传者："}, l_date {fm, "上传日期："};
 	::widgets::Text l_durtext {fm, ""}, l_chaptext {fm, ""}, l_upltext {fm, ""}, l_datetext {fm, ""};
 	nana::picture thumb {fm};
 	::widgets::thumb_label thumb_label {fm};
 	::widgets::Separator sep1 {fm}, sep2 {fm};
-	::widgets::cbox cb_streams {fm, "Select multiple audio formats to merge into .mkv file as audio tracks "
-		"(this passes --audio-multistreams to yt-dlp)"};
+	::widgets::cbox cb_streams {fm, "选择多个音频格式作为独立音轨合并到 MKV 文件（--audio-multistreams）"};
 	::widgets::Listbox list {fm, nullptr, true};
-	::widgets::Button btnok {fm, "Use the selected format(s)"}, btncancel {fm, "Let yt-dlp choose the best formats (default)"};
+	::widgets::Button btnok {fm, "使用所选格式"}, btncancel {fm, "由 yt-dlp 自动选择最佳格式（默认）"};
 
 	fm["l_title"] << l_title;
 	fm["l_dur"] << l_dur;
@@ -69,17 +68,17 @@ void GUI::fm_formats()
 	list.checkable(true);
 	list.enable_single(true, false);
 	list.scheme().text_margin = dpi_scale(10) + (api::screen_dpi(true) > 96) * 4;
-	list.append_header("format", dpi_scale(280));
-	list.append_header("acodec", dpi_scale(90));
-	list.append_header("vcodec", dpi_scale(90));
-	list.append_header("ext", dpi_scale(50));
+	list.append_header("格式", dpi_scale(280));
+	list.append_header("音频编码", dpi_scale(90));
+	list.append_header("视频编码", dpi_scale(90));
+	list.append_header("扩展名", dpi_scale(50));
 	list.append_header("fps", dpi_scale(32));
 	list.append_header("ch", dpi_scale(50));
 	list.append_header("vbr", dpi_scale(40));
 	list.append_header("abr", dpi_scale(40));
 	list.append_header("tbr", dpi_scale(40));
 	list.append_header("asr", dpi_scale(50));
-	list.append_header("filesize", dpi_scale(160));
+	list.append_header("文件大小", dpi_scale(160));
 
 	list.events().selected([&](const arg_listbox &arg)
 	{
@@ -92,7 +91,7 @@ void GUI::fm_formats()
 		if(conf.audio_multistreams)
 		{
 			auto pos {list.cast({arg.pos.x, arg.pos.y})};
-			if(pos.is_category() && list.at(pos.cat).text() == "Audio only")
+			if(pos.is_category() && list.at(pos.cat).text() == "仅音频")
 			{
 				list.auto_draw(false);
 				for(auto ip : list.at(pos.cat))
@@ -118,13 +117,13 @@ void GUI::fm_formats()
 				if(list.size_categ() == 3)
 					for(auto ip : list.at(2))
 						ip.check(false);
-				if(list.size_categ() > 1 && (!conf.audio_multistreams || list.at(1).text() == "Video only"))
+				if(list.size_categ() > 1 && (!conf.audio_multistreams || list.at(1).text() == "仅视频"))
 					for(auto ip : list.at(1))
 						ip.check(false);
 			}
 			else if(list.size_categ() > 1)
 			{
-				if(list.at(pos.cat).text() == "Video only")
+				if(list.at(pos.cat).text() == "仅视频")
 				{
 					for(auto ip : list.at(0))
 						ip.check(false);
@@ -150,7 +149,7 @@ void GUI::fm_formats()
 	cb_streams.events().checked([&]
 	{
 		conf.audio_multistreams = cb_streams.checked();
-		if(!conf.audio_multistreams && list.size_categ() > 1 && list.at(1).text() == "Audio only")
+		if(!conf.audio_multistreams && list.size_categ() > 1 && list.at(1).text() == "仅音频")
 		{
 			list.auto_draw(false);
 			int count {0};
@@ -237,7 +236,7 @@ void GUI::fm_formats()
 		size_t vidcat {0};
 		if(list.size_categ() == 3)
 			vidcat = 2;
-		else if(list.size_categ() == 2 && list.at(1).text() == "Video only")
+		else if(list.size_categ() == 2 && list.at(1).text() == "仅视频")
 			vidcat = 1;
 
 		bool mergeall {false};
@@ -296,7 +295,7 @@ void GUI::fm_formats()
 					fsize = util::int_to_filesize(fmt["filesize"].get<std::uint64_t>(), false);
 				else if(fmt.contains("filesize_approx") && fmt["filesize_approx"] != nullptr)
 					fsize = util::int_to_filesize(fmt["filesize_approx"].get<std::uint64_t>(), false);
-				if(list.at(sel.front().cat).text() == "Audio only")
+				if(list.at(sel.front().cat).text() == "仅音频")
 					fmt_note = get_string(fmt, "format_note");
 				else fmt_note = get_string(fmt, "resolution");
 				ext = get_string(fmt, "ext");
@@ -353,9 +352,8 @@ void GUI::fm_formats()
 		bottom.use_strfmt = true;
 		if(bottom.using_custom_fmt())
 		{
-			::widgets::msgbox mbox {fm, "Warning: conflicting -f arguments"};
-			std::string text {"The \"Custom arguments\" checkbox is checked, and \"-f\" is present as a custom argument.\n\n"
-				"If you don't uncheck that checkbox, the \"-f\" custom argument will override the selection you have made here."};
+			::widgets::msgbox mbox {fm, "警告：-f 参数冲突"};
+			std::string text {"已启用“自定义参数”，且其中包含 -f 参数。\n\n自定义的 -f 参数会覆盖此处选择的格式。请取消勾选“自定义参数”或移除其中的 -f 参数。"};
 			mbox.icon(nana::msgbox::icon_warning);
 			(mbox << text)();
 		}
@@ -365,7 +363,7 @@ void GUI::fm_formats()
 	btnok.enabled(false);
 	thumb.transparent(true);
 
-	std::string thumb_url, title {"[title missing]"};
+	std::string thumb_url, title {"[缺少标题]"};
 	if(bottom.vidinfo_contains("title"))
 		title = vidinfo["title"];
 	if(!bottom.is_ytlink)
@@ -392,8 +390,8 @@ void GUI::fm_formats()
 			thumb_url = (*it)["url"];
 	}
 
-	l_title.caption(title);
-	list.append({"Audio only", "Video only"});
+	l_title.nana::label::caption(title);
+	list.append({"仅音频", "仅视频"});
 
 	int dur {0};
 	bool live {bottom.vidinfo_contains("is_live") && bottom.vidinfo["is_live"] ||
@@ -432,7 +430,7 @@ void GUI::fm_formats()
 	else l_chaptext.caption(strchap);
 
 	if(bottom.vidinfo_contains("uploader"))
-		l_upltext.caption(std::string {vidinfo["uploader"]});
+		l_upltext.nana::label::caption(std::string {vidinfo["uploader"]});
 	else l_upltext.caption("---");
 
 	std::string strdate {"---"};
@@ -465,8 +463,8 @@ void GUI::fm_formats()
 						ext = thumb_url.substr(pos, idx-pos);
 					}
 					if(ext.empty())
-						thumb_label.caption("thumbnail format unsupported");
-					else thumb_label.caption("thumbnail format unsupported\n(" + ext + ')');
+						thumb_label.caption("不支持该缩略图格式");
+					else thumb_label.caption("不支持该缩略图格式\n（" + ext + ')');
 					fm.get_place().field_display("thumb_label", true);
 					fm.collocate();
 				}
@@ -479,7 +477,7 @@ void GUI::fm_formats()
 			else
 			{
 				if(error.empty())
-					thumb_label.caption("error downloading thumbnail");
+					thumb_label.caption("缩略图下载失败");
 				else thumb_label.caption(error);
 				fm.get_place().field_display("thumb_label", true);
 				fm.collocate();
@@ -488,7 +486,7 @@ void GUI::fm_formats()
 	}
 	else
 	{
-		thumb_label.caption("thumbnail not available");
+		thumb_label.caption("无可用缩略图");
 		fm.get_place().field_display("thumb_label", true);
 		fm.collocate();
 	}

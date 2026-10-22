@@ -22,7 +22,7 @@ void GUI::fm_changes(nana::window parent)
 		tb.editable(false);
 	}
 
-	widgets::cbox cblogview {fm, "Changelog view"};
+	widgets::cbox cblogview {fm, "更新记录视图"};
 	fm["cblogview"] << cblogview;
 
 	auto display_release_notes = [&](const unsigned ver)

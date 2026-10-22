@@ -57,7 +57,7 @@ void GUI::make_form()
 	else btnlabel.image(arr_text_field_16_png, sizeof arr_text_field_16_png);
 
 	btn_settings.events().click([this] { fm_settings(); });
-	btn_qact.tooltip("Pops up a menu with actions that can be performed on\nthe queue items (same as right-clicking on the queue).");
+	btn_qact.tooltip("跳出可对队列项目运行的操作菜单\n（和在队列上按右键的功能相同）。");
 
 	l_url.events().mouse_enter([this]
 	{
@@ -428,7 +428,7 @@ void GUI::make_form_bottom()
 	btnlabel.events().click([&]
 	{
 		const auto existing_label {label_from_argset(com_args.caption())};
-		auto input {input_box(*this, "Argset label", "Label for argument set:", existing_label.data())};
+		auto input {input_box(*this, "参数组标签", "参数组标签：", existing_label.data())};
 		if(input.first)
 		{
 			while(!input.second.empty() && input.second.front() == '[')
@@ -474,7 +474,7 @@ void GUI::make_form_bottom()
 
 	btnq.events().click([&]
 	{
-		if(btnq.caption().find("queue") != -1)
+		if(btnq.caption() == i18n::tr("Show queue"))
 			show_queue();
 		else show_output();
 	});
@@ -524,9 +524,9 @@ void GUI::make_form_bottom()
 	});
 
 	com_chap.editable(false);
-	com_chap.push_back(" ignore");
-	com_chap.push_back(" embed");
-	com_chap.push_back(" split");
+	com_chap.push_back(" 忽略");
+	com_chap.push_back(" 嵌入");
+	com_chap.push_back(" 分割");
 
 	com_rate.editable(false);
 	com_rate.push_back(" KB/s");
@@ -606,34 +606,35 @@ void GUI::make_form_bottom()
 		}
 	});
 
-	com_chap.tooltip("<bold>--embed-chapters</>\tAdd chapter markers to the video file.\n"
-		"<bold>--split-chapters</> \t\tSplit video into multiple files based on chapters.");
-	cbkeyframes.tooltip("Force keyframes around the chapters before\nremoving/splitting them. Requires a\n"
-		"reencode and thus is very slow, but the\nresulting video may have fewer artifacts\n"
-		"around the cuts. (<bold>--force-keyframes-at-cuts</>)");
-	cbtime.tooltip("Do not use the Last-modified header to set the file modification time (<bold>--no-mtime</>)");
-	cbsubs.tooltip("Embed subtitles in the video (only for mp4, webm and mkv videos) (<bold>--embed-subs</>)");
-	cbthumb.tooltip("Embed thumbnail in the video as cover art (<bold>--embed-thumbnail</>)");
-	cbmp3.tooltip("Convert the source audio to MPEG Layer 3 format and save it to an .mp3 file.\n"
-		"The video is discarded if present, so it's preferable to download an audio-only\n"
-		"format if one is available. (<bold>-x --audio-format mp3</>)\n\n"
-		"To download the best audio-only format available, use the custom\nargument <bold>-f ba</>");
-	btnlabel.tooltip("Label this argument set");
-	btnerase.tooltip("Remove this argument set from the list");
-	btncopy.tooltip("Copy the options for this queue item to all the other queue items.");
-	btn_ytfmtlist.tooltip("Choose formats manually, instead of letting yt-dlp\nchoose automatically. "
-		"By default, yt-dlp chooses the\nbest formats, according to the preferences you set\n"
-		"(if you press the \"Settings\" button, you can set\nthe preferred resolution, container, and framerate).");
+	com_chap.tooltip("<bold>--embed-chapters</>\t将章节标记写入视频档。\n"
+		"<bold>--split-chapters</> \t\t依章节将视频分割成多个文件。");
+	cbkeyframes.tooltip("在移除／分割章节前，先在切点附近强制加入关键帧。\n"
+		"这需要重新编码，因此速度会比较慢，\n"
+		"但切点附近可能会有更少的压缩瑕疵。\n"
+		"(<bold>--force-keyframes-at-cuts</>)");
+	cbtime.tooltip("不要使用 Last-Modified 标头来设置文件修改时间（<bold>--no-mtime</>）");
+	cbsubs.tooltip("将字幕嵌入到视频中（仅适用于 mp4、webm 与 mkv 视频）（<bold>--embed-subs</>）");
+	cbthumb.tooltip("将缩略图作为封面图嵌入到视频中（<bold>--embed-thumbnail</>）");
+	cbmp3.tooltip("将来源音频转成 MPEG Layer 3 格式并保存为 .mp3 文件。\n"
+		"如果有视频内容会被舍弃，因此若有音频专用格式，\n"
+		"通常优先下载音频专用格式会更合适。（<bold>-x --audio-format mp3</>）\n\n"
+		"若要下载当前可用的最佳音频专用格式，可使用自定义参数\n"
+		"<bold>-f ba</>");
+	btnlabel.tooltip("为这组参数加上标签");
+	btnerase.tooltip("从清单中移除这组参数");
+	btncopy.tooltip("将这个队列项目的选项复制到其他所有队列项目。");
+	btn_ytfmtlist.tooltip("手动选择格式，而不是交由 yt-dlp 自动判断。\n"
+		"默认情况下，yt-dlp 会依照你设置的偏好\n"
+		"自动挑选最佳格式。\n"
+		"（按下「设置」后，可以设置偏好分辨率、容器与帧率。）");
 	std::string args_tip
 	{
-		"Custom options for yt-dlp, separated by space. Some useful examples:\n\n"
-			"<bold>-f ba</> : best audio (downloads just audio-only format, if available)\n"
-			"<bold>-f wa</> : worst audio\n"
-			"<bold>-f wv+wa</> : combines the worst video format with the worst audio format\n"
-			"<bold>--live-from-start</> : Downloads livestreams from the start. Currently \n"
-			"								  only supported for YouTube (experimental).\n\n"
-			"For more, read the yt-dlp documentation:\n"
-			"https://github.com/yt-dlp/yt-dlp#usage-and-options"
+		"自定义 yt-dlp 参数，用空格分隔。常用示例：\n\n"
+		"<bold>-f ba</>：最佳纯音频格式\n"
+		"<bold>-f wa</>：最低质量音频\n"
+		"<bold>-f wv+wa</>：最低质量视频与音频组合\n"
+		"<bold>--live-from-start</>：从头下载直播（支持情况取决于网站）\n\n"
+		"完整说明：https://github.com/yt-dlp/yt-dlp#usage-and-options"
 	};
 	cbargs.tooltip(args_tip);
 	com_args.tooltip(args_tip);
@@ -672,7 +673,7 @@ void GUI::make_form_bottom()
 		{
 			nana::folderbox fb {*this, conf.open_dialog_origin ? outpath : appdir};
 			fb.allow_multi_select(false);
-			fb.title("Locate and select the desired download folder");
+			fb.title("选择要使用的下载文件夹");
 			auto res {fb()};
 			if(res.size())
 			{
