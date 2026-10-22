@@ -287,7 +287,7 @@ void GUI::fm_colors(themed_form &parent)
 		if(auto c {container::selected})
 		{
 			auto selclr {picker.color_value()};
-			auto &tb {*dynamic_cast<my_tbox*>(c->widgets.front())};
+			auto &tb {*dynamic_cast<my_tbox*>(c->controls.front())};
 			if(!tb.noupdate)
 			{
 				tb.noupdate = true;
@@ -311,7 +311,7 @@ void GUI::fm_colors(themed_form &parent)
 				for(auto c : container::containers)
 				{
 					c->bgcolor(t_custom.fmbg);
-					c->widgets.front()->events().expose.emit({}, *c->widgets.front());
+					c->controls.front()->events().expose.emit({}, *c->controls.front());
 				}
 				pnl_picker.bgcolor(t_custom.fmbg.blend(theme::is_dark() ? colors::white : colors::black, .15));
 				picker.bgcolor(pnl_picker.bgcolor());
@@ -352,7 +352,7 @@ void GUI::fm_colors(themed_form &parent)
 			{
 				theme::tbfg = t_custom.tbfg;
 				for(auto c : container::containers)
-					c->widgets.front()->fgcolor(theme::tbfg);
+					c->controls.front()->fgcolor(theme::tbfg);
 			}
 			else if(wd_target == l_itext)
 			{
@@ -365,7 +365,7 @@ void GUI::fm_colors(themed_form &parent)
 				theme::tb_selbg = t_custom.tb_selbg;
 				for(auto c : container::containers)
 				{
-					auto &tb {*dynamic_cast<my_tbox*>(c->widgets.front())};
+					auto &tb {*dynamic_cast<my_tbox*>(c->controls.front())};
 					tb.scheme().selection = theme::tb_selbg;
 				}
 				tb_tbsel.focus();
@@ -376,7 +376,7 @@ void GUI::fm_colors(themed_form &parent)
 				theme::tb_selbg_unfocused = t_custom.tb_selbg_unfocused;
 				for(auto c : container::containers)
 				{
-					auto &tb {*dynamic_cast<my_tbox*>(c->widgets.front())};
+					auto &tb {*dynamic_cast<my_tbox*>(c->controls.front())};
 					tb.scheme().selection_unfocused = theme::tb_selbg_unfocused;
 				}
 				tb_tbsel_unfocused.select(true);
@@ -476,7 +476,7 @@ void GUI::fm_colors(themed_form &parent)
 
 		for(auto c : container::containers)
 		{
-			auto &tb {*dynamic_cast<my_tbox*>(c->widgets.front())};
+			auto &tb {*dynamic_cast<my_tbox*>(c->controls.front())};
 			if(c == container::selected)
 			{
 				tb.apply();
@@ -557,7 +557,7 @@ void GUI::fm_colors(themed_form &parent)
 			fm.bgcolor(theme::fmbg);
 			btnapply.enabled(t_custom != t_conf);
 			btndef.enabled(t_custom != t_def);
-			auto &tb {*dynamic_cast<my_tbox*>(container::selected->widgets.front())};
+			auto &tb {*dynamic_cast<my_tbox*>(container::selected->controls.front())};
 			tb.apply();
 		}
 	});
@@ -614,7 +614,7 @@ void GUI::fm_colors(themed_form &parent)
 	pnl_picker.bgcolor(t_custom.fmbg.blend(theme::is_dark() ? colors::white : colors::black, .15));
 	picker.bgcolor(pnl_picker.bgcolor());
 
-	container::containers.front()->widgets.front()->focus();
+	container::containers.front()->controls.front()->focus();
 	theme::import(t_custom);
 
 	fm.refresh_widgets();
@@ -625,7 +625,7 @@ void GUI::fm_colors(themed_form &parent)
 
 void container::refresh_btn_state()
 {
-	auto &tb {*dynamic_cast<my_tbox*>(widgets.front())};
+	auto &tb {*dynamic_cast<my_tbox*>(controls.front())};
 	auto off {reinterpret_cast<intptr_t>(tb.clr) - reinterpret_cast<intptr_t>(t_custom)};
 	auto clrconf {reinterpret_cast<nana::color*>(reinterpret_cast<intptr_t>(t_conf) + off)};
 	btn.enable(*tb.clr != *clrconf);
@@ -645,7 +645,7 @@ void container::create(nana::window parent)
 	plc.bind(*this);
 	btn.create(*this);
 	ffi.plc = &plc;
-	ffi.widgets = &widgets;
+	ffi.controls = &controls;
 	ffi.target = &target;
 	refresh_theme();
 	div("margin=5 weight=25 <first weight=80> <weight=15> <second> <weight=15> <vert weight=24 <btn weight=24>>");
@@ -678,7 +678,7 @@ void container::create(nana::window parent)
 	events().mouse_down([parent, this]
 	{
 		selected = this;
-		widgets.front()->focus();
+		controls.front()->focus();
 		bgcolor(theme::fmbg);
 		api::refresh_window(parent);
 	});
@@ -687,7 +687,7 @@ void container::create(nana::window parent)
 	{
 		if(!arg.is_left_button())
 		{
-			auto &tb {*dynamic_cast<my_tbox*>(widgets.front())};
+			auto &tb {*dynamic_cast<my_tbox*>(controls.front())};
 			auto off {reinterpret_cast<intptr_t>(tb.clr) - reinterpret_cast<intptr_t>(t_custom)};
 			auto clrdef {reinterpret_cast<color*>(reinterpret_cast<intptr_t>(t_def) + off)};
 			*tb.clr = *clrdef;
@@ -698,7 +698,7 @@ void container::create(nana::window parent)
 
 	btn.events().click([this]
 	{
-		auto &tb {*dynamic_cast<my_tbox*>(widgets.front())};
+		auto &tb {*dynamic_cast<my_tbox*>(controls.front())};
 		auto off {reinterpret_cast<intptr_t>(tb.clr) - reinterpret_cast<intptr_t>(t_custom)};
 		auto clrconf {reinterpret_cast<color*>(reinterpret_cast<intptr_t>(t_conf) + off)};
 		*tb.clr = *clrconf;
@@ -717,8 +717,8 @@ void container::create(nana::window parent)
 nana::place::field_reference container::fake_field_interface::operator<<(nana::window wd)
 {
 	auto wdg {nana::api::get_widget(wd)};
-	widgets->push_back(wdg);
-	if(widgets->size() == 1)
+	controls->push_back(wdg);
+	if(controls->size() == 1)
 	{
 		auto &c {*dynamic_cast<container*>(parent)};
 		c.refresh_btn_state();
